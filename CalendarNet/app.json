@@ -4,15 +4,18 @@
     "slug": "CalendarNet",
     "version": "1.0.0",
     "orientation": "portrait",
+    "entryPoint": "./app/index.js",
     "icon": null,
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": null, 
+      "image": null,
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -27,11 +30,11 @@
       "output": "static",
       "favicon": null
     },
-    "plugins": [
-      "expo-router"
-    ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
