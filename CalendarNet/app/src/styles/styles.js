@@ -12,14 +12,14 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     header:{
-        height: 60,
+        height: 40,
         justifyContent: 'center',
         alignItems: 'center',
 
     },
     headerText:{
         color:'black',
-        fontSize:45,
+        fontSize:30,
     },
 });
 

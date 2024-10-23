@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,Text} from 'react-native';
+import {View,Text,Button} from 'react-native';
 import styles from '../styles/styles';
 
 const SignIn = () => {
@@ -9,6 +9,7 @@ const SignIn = () => {
                 <Text style={styles.headerText}>Welcome to CalendarNet</Text>
             </View>
             <Text style={styles.text}>Sign In</Text>
+            <Button title='Go to Log In' onPress={() => router.push('LogIn')} />
         </View>
     );
 };
