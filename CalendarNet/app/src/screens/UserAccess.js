@@ -42,6 +42,7 @@ const userAccess = () => {
                 placeholder='Enter Password'
                 value = {password}
                 onChangeText={setPassword}
+                secureTextEntry
             />
             <AppButton
                 title={isSignIn ? "Sign Up" : "Log In"}

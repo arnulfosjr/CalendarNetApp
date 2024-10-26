@@ -5,13 +5,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "entryPoint": "./app/index.js",
-    "icon": null,
+    "icon": "./app/src/assets/images/logo.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": null,
+      "image": "./app/src/assets/images/logo.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2960AC"
     },
     "assetBundlePatterns": [
       "**/*"
