@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
-import SignIn from './src/screens/SignIn';
-import LogIn from './src/screens/LogIn';
+import UserAcess from './src/screens/UserAccess';
 import Calendar from './src/screens/Calendar';
 
 export default function Index(){
-    return <SignIn />;
+    return <UserAcess />;
 }
