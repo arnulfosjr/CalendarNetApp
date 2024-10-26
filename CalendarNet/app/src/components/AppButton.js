@@ -17,8 +17,9 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         color:'black',
-        fontSize:16,
+        fontSize:20,
         fontWeight:'bold',
+        fontFamily:'Georgia',
     },
 });
 

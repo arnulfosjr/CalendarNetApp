@@ -18,14 +18,16 @@ const userAccess = () => {
         <View style={styles.container}>
             <Image
                 source={require('../assets/images/logo.jpg')}
-                style={[styles.logo,{width:400,height:200}]}
+                style={styles.logo}
                 resizeMode="contain"
             />
             <View style={styles.header}>
-                <Text style={styles.headerText}>Welcome to CalendarNet</Text>
+                <View>
+                    <Text style={styles.headerText}>Welcome to CalendarNet</Text>
+                </View>
             </View>
             <View>
-                <Text style={styles.text}>{isSignIn ? "Sign In": "Log In"}</Text>
+                <Text style={[styles.text,{fontSize:30,height:60}]}>{isSignIn ? "Sign In": "Log In"}</Text>
             </View>
             <Text style={styles.text}>Email:</Text>
             <TextInput

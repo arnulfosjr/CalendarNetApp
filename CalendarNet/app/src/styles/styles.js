@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
         color:'black',
         fontSize:30,
         fontFamily:'Georgia',
+        height:90,
     },
     textBox:{
         width:'50%',
@@ -33,8 +34,8 @@ const styles = StyleSheet.create({
         marginBottom:15,
     }, 
     logo:{
-        width:150,
-        height:150,
+        width:400,
+        height:200,
         marginBottom:20,
     }, 
     bottomImage:{
