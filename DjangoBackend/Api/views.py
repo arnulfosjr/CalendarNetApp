@@ -93,7 +93,7 @@ class TaskView(APIView):
         serializers = UserSerializer(task)
         return Response(serializers.data)
 
-class ReminderCreate():
+class ReminderCreate(APIView):
     def post(self,request):
         serializers = ReminderSerializer(data=request.data)
         if serializers.is_valid():
@@ -101,7 +101,7 @@ class ReminderCreate():
             return Response(serializers.data,status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
-class ReminderEdit():
+class ReminderEdit(APIView):
     def put(self,request,pk):
         reminder = get_object_or_404(Reminder,pk=pk)
         serializers = UserSerializer(reminder, data=request.data)
