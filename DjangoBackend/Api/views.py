@@ -4,7 +4,10 @@ from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, permissions
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
+
 
 class UserCreate(APIView):
     def post(self,request):
@@ -13,6 +16,20 @@ class UserCreate(APIView):
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class UserLogIn(APIView):
+    def post(self,request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(request,email=email, password=password)
+
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key},status=status.HTTP_200_OK)
+        
+        return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+    
 
 class UserEdit(APIView):
     def put(self,request,pk):

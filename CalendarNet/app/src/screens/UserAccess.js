@@ -1,17 +1,39 @@
-import React,{useState} from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React,{useState} from 'react' 
 import {View,Text,TextInput,Image,TouchableOpacity} from 'react-native';
 import styles from '../styles/styles';
 import AppButton from '../components/AppButton';
+import { createUsers, logInUser } from '../services/api';
+import { useRouter } from 'expo-router';
 
-const userAccess = () => {
+const UserAccess = () => {
     const [isSignIn, setIsSignIn] = useState(true)
     const [email, setEmail] = useState(''); 
     const [password,setPassword] = useState('');
-    const navigation = useNavigation();
+    const router = useRouter();
+
 
     const accessChoice = () => {
         setIsSignIn(!isSignIn);
+    };
+
+    const userSubmission = async () => {
+        try{
+            if(isSignIn){
+                const userData = {email, password};
+                const response = await createUsers(userData);
+                if(response){
+                    router.push('Calendar');
+                }
+            }else {
+                const userData = {email, password};
+                const response = await logInUser(userData);
+                if(response){
+                    router.push('Calendar');
+                }
+            }
+        } catch (error){
+            console.error('Error:',error);
+        }
     };
 
     return(
@@ -46,7 +68,7 @@ const userAccess = () => {
             />
             <AppButton
                 title={isSignIn ? "Sign Up" : "Log In"}
-                onPress={() => navigation.navigate('Calendar')}
+                onPress={userSubmission}
             />
             <Text style={[styles.text,{marginTop:20}]}>{isSignIn ? "Returning User?" : "New User?"} </Text>
             <TouchableOpacity onPress={accessChoice}>
@@ -60,4 +82,4 @@ const userAccess = () => {
         </View>
     );
 };
-export default userAccess;
+export default UserAccess;

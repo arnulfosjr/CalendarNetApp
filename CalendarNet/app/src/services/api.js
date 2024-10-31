@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000:5432/api',
+    baseURL: 'http://127.0.0.1:8000/api/version1',
     timeout: 5000,
     headers: { 'Content-Type': 'application/json'},
 });
@@ -13,6 +13,16 @@ export const createUsers = async (userData) => {
     }
     catch(error) {
         console.error('Error creating user:', error);
+    }
+};
+
+export const logInUser = async (userData) => {
+    try {
+        const response = await api.post('/users/login/',userData);
+        return response.data;
+    }
+    catch(error) {
+        console.error('Error logging inaa:', error);
     }
 };
 

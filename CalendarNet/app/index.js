@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
-import UserAcess from './src/screens/UserAccess';
-import Calendar from './src/screens/Calendar';
+import UserAccess from './src/screens/UserAccess';
 
 export default function Index(){
-    return <UserAcess />;
+    return <UserAccess />;
+    
 }
