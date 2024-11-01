@@ -22,13 +22,21 @@ const UserAccess = () => {
                 const userData = {email, password};
                 const response = await createUsers(userData);
                 if(response){
+                    console.log('new user is in');
                     router.push('Calendar');
+                }
+                else{
+                    console.log('new user cannot get in');
                 }
             }else {
                 const userData = {email, password};
                 const response = await logInUser(userData);
                 if(response){
+                    console.log('returning user is in ');
                     router.push('Calendar');
+                }
+                else{
+                    console.log('returning user cannot get in');
                 }
             }
         } catch (error){
