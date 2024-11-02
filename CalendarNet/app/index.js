@@ -1,7 +1,8 @@
 import { Stack } from 'expo-router';
-import UserAccess from './src/screens/UserAccess';
+import UserAccess from './screens/UserAccess'
 
-export default function Index(){
+
+export default function Index() {
     return <UserAccess />;
-    
+
 }
