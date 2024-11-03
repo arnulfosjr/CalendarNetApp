@@ -7,6 +7,10 @@ const calendarStyle = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#2960AC',
     },
+    scrollView:{
+        flex:1,
+        backgroundColor:'#2960AC',
+    },
     header:{
         width:'100%',
         height: 100,
@@ -17,7 +21,8 @@ const calendarStyle = StyleSheet.create({
         color:'black',
         fontSize:30,
         fontFamily:'Arial',
-        height:90,
+        height:35,
+        fontWeight:'bold',
     },
     dayNamesDisplay:{
         flexDirection:'row',
@@ -26,7 +31,7 @@ const calendarStyle = StyleSheet.create({
         height:20,
         width:'100%',
         paddingHorizontal:10,
-        marginBottom:10,
+        marginBottom:5,
     },
     text:{
         fontSize: 20,
@@ -39,7 +44,7 @@ const calendarStyle = StyleSheet.create({
         width:'100%',
     },
     dayBox:{
-        width:50,
+        width:'14%',
         height:100,
         borderColor:'black',
         borderWidth:1,
