@@ -1,7 +1,10 @@
-import React from 'react';
-import { View, Text,ScrollView,TouchableOpacity} from 'react-native';
+import React,{useState} from 'react';
+import { View, Text,ScrollView,TouchableOpacity,Modal} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
+import popUpStyle from '../src/components/popUpStyle';
+import AppButton from '../src/components/AppButton';
 import { format, startOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek} from 'date-fns';
+import { createEvents,getEvents } from '../src/services/api';
 
 const calendarUI = () => {
     const date = new Date();
@@ -9,6 +12,8 @@ const calendarUI = () => {
     const start = startOfMonth(date);  // start of the month number
     const end = endOfMonth(date);      // end of the month number.
     const weeks = eachWeekOfInterval({start,end},{weekStartsOn:0}); 
+    const [isVisible,setIsVisible] = useState(false);
+    const [selectedDay,setSelectedDay] = useState(null);
 
     const weeksInMonth = weeks.map(startOfWeek => {
         const endOfCurrentWeek = endOfWeek(startOfWeek,{weekStartsOn:0});
@@ -17,11 +22,12 @@ const calendarUI = () => {
     });
 
     const userOnePress = (day) => {
-        alert(`user one clicked ${format(day, 'MMMM d, yyyy')}`);
+        setSelectedDay(day);
+        setIsVisible(true);
     };
 
     const userLongPress = (day) => {
-        alert(`user long clicked ${format(day, 'MMMM d, yyyy')}`);
+        
     };
 
     return (
@@ -32,7 +38,7 @@ const calendarUI = () => {
                 </View>
                 <View style={calendarStyle.dayNamesDisplay}>
                     {['Sun','Mon','Tue','Wed','Thu ','Fri ','Sat '].map(day =>(
-                        <Text key={day} style={calendarStyle.dayBoxText}>{day}</Text>
+                        <Text key={day} style={calendarStyle.text}>{day}</Text>
                     ))}
                 </View>
                 {weeksInMonth.map((week,weekIndex) => (
@@ -41,7 +47,7 @@ const calendarUI = () => {
                             <TouchableOpacity activeOpacity={1} key={dayIndex} style={calendarStyle.dayBox} onPress={() => 
                             userOnePress(day) } onLongPress={() => userLongPress(day) }>
                             <View >
-                                <Text style={calendarStyle.text}>
+                                <Text style={calendarStyle.dayBoxText}>
                                     {day.getMonth() === date.getMonth() ? format(day,'d'):''}
                                 </Text>
                             </View>
@@ -50,6 +56,21 @@ const calendarUI = () => {
                     </View>
                 ))}
             </View>
+            <Modal animationType="fade" transparent={true} visible={isVisible}>
+                <View style={popUpStyle.Overlay}>
+                    <View style={popUpStyle.Content}>
+                        <Text style={popUpStyle.popUpText}>
+                            {selectedDay ? format(selectedDay,'MMMM d, yyyy'): ''}
+                        </Text>
+                        <View style={popUpStyle.Content}>
+                            <Text style={popUpStyle.popUpText}>
+                                {}
+                            </Text>
+                        </View>
+                        <AppButton title="Close" onPress={()=> setIsVisible(false)}/>
+                    </View>
+                </View>
+            </Modal>
         </ScrollView>
     );
 };
