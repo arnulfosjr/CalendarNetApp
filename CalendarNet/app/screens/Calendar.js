@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import { View, Text,ScrollView,TouchableOpacity,Modal} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import popUpStyle from '../src/components/popUpStyle';
@@ -14,6 +14,8 @@ const calendarUI = () => {
     const weeks = eachWeekOfInterval({start,end},{weekStartsOn:0}); 
     const [isVisible,setIsVisible] = useState(false);
     const [selectedDay,setSelectedDay] = useState(null);
+    const [events,setEvent] = useState([]);
+    const [dayOfEvent,setDayOfEvent] = useState([]);
 
     const weeksInMonth = weeks.map(startOfWeek => {
         const endOfCurrentWeek = endOfWeek(startOfWeek,{weekStartsOn:0});
@@ -21,14 +23,33 @@ const calendarUI = () => {
         return daysInWeek;
     });
 
+    useEffect(() => {
+        const fetchEvents = async () => {
+            const getEventsFetched = await getEvents();
+            console.log('fetched events:',getEventsFetched);
+            setEvent(getEventsFetched);
+        };
+        fetchEvents();
+    },[]);
+
     const userOnePress = (day) => {
         setSelectedDay(day);
+        if(events && events.length > 0){  // check if events is defined and not defined.
+            const filteredEvents = events.filter(event => 
+                format(new Date(event.date),'yyyy-MM-dd') === format(day,'yyyy-MM-dd')
+            );
+            setDayOfEvent(filteredEvents);
+        }else{
+            setDayOfEvent([]); // No events for this day
+        }
         setIsVisible(true);
+        
     };
 
     const userLongPress = (day) => {
         
     };
+
 
     return (
         <ScrollView style={calendarStyle.scrollView}>
@@ -60,13 +81,16 @@ const calendarUI = () => {
                 <View style={popUpStyle.Overlay}>
                     <View style={popUpStyle.Content}>
                         <Text style={popUpStyle.popUpText}>
-                            {selectedDay ? format(selectedDay,'MMMM d, yyyy'): ''}
+                            {selectedDay ? format(selectedDay,'yyyy-MM-dd'): ''}
                         </Text>
-                        <View style={popUpStyle.Content}>
-                            <Text style={popUpStyle.popUpText}>
-                                {}
-                            </Text>
-                        </View>
+                            {dayOfEvent.length > 0 ? (
+                                dayOfEvent.map((eventx,index) => (
+                                    <Text key={index} style={popUpStyle.popUpText}>
+                                        {format(new Date(eventx.date),'p')}: {eventx.title}
+                                    </Text>
+                                ))
+                            ) : (<Text style={popUpStyle.popUpText}>No events for this day.</Text>    
+                            )}
                         <AppButton title="Close" onPress={()=> setIsVisible(false)}/>
                     </View>
                 </View>
