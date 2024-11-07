@@ -1,8 +1,11 @@
-import { Stack } from 'expo-router';
-import UserAccess from './screens/UserAccess';
-import Calendar from './screens/Calendar';
+import { Link } from 'expo-router';
+import { Text } from 'react-native';
 
 export default function Index() {
-    return <Calendar />;
-    
-}
+    return(
+        <Link href="/screens/UserAccess">
+            <Text>Go to UserAccess</Text>
+        </Link>
+    );
+ 
+};

@@ -1,8 +1,12 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class User(models.Model):
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=12)
+    password = models.CharField(max_length=128)
+
+    def set_password(self, password): # password hashing
+        self.password = password
 
 class Event(models.Model):
     title = models.CharField(max_length=20)
@@ -26,5 +30,16 @@ class Reminder(models.Model):
     time = models.DateTimeField()
     timeCreated = models.DateTimeField(auto_now_add=True)
     updateTimeCreated = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if not self.event and not self.task:
+            raise ValidationError("Reminder must have either an event or a task.")
+        if self.event and self.task:
+            raise ValidationError("Reminder must choose either event or task, not both.")
+        
+    def save(self, *args, **kwargs):
+        # class clean method before saving.
+        self.clean()
+        super(Reminder, self)
 
     
