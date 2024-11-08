@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
         color:'black',
         fontSize:30,
         fontFamily:'Georgia',
-        height:90,
+        height:80,
     },
     textBox:{
         width:'50%',
@@ -34,14 +34,13 @@ const styles = StyleSheet.create({
         marginBottom:15,
     }, 
     logo:{
-        width:400,
-        height:200,
+        width:200,
+        height:150,
         marginBottom:20,
     }, 
     bottomImage:{
         width:450,
         height:250,
-        marginBottom:25,
     },
 
 });

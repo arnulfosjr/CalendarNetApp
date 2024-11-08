@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/version1',
     timeout: 5000,
@@ -18,12 +19,22 @@ export const createUsers = async (userData) => {
 
 export const logInUser = async (userData) => {
     try {
+        console.log('Loggin in:', userData);
         const response = await api.post('/users/login/',userData);
+        const token = response.data.token;
+
+        // token saved for future authenticated requests.
+        api.defaults.headers.common['Authorization'] = `Token ${token}`;
         return response.data;
     }
     catch(error) {
-        console.error('Error logging inaa:', error);
+        console.error('Error logging in:', error);
+        throw error;
     }
+};
+
+export const logOutUser = () => {
+    delete api.defaults.headers.common['Authorization'];
 };
 
 export const editUsers = async (userId,userData) => {
@@ -68,7 +79,7 @@ export const editEvents = async (eventId,eventData) => {
 
 export const getEvents = async (eventId) => {
     try {
-        const response = await api.get(`/event/${eventId}/`);
+        const response = await api.get('/event/');
         return response.data;
     }
     catch(error) {

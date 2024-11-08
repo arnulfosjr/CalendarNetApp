@@ -1,14 +1,20 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password, check_password
 
 class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
 
-    def set_password(self, password): # password hashing
-        self.password = password
+    def set_password(self, raw_password): # password hashing.
+        self.password = make_password(raw_password)
+        self.save()
+    
+    def check_password(self,raw_password): # check hashed password.
+        return check_password(raw_password,self.password)
 
 class Event(models.Model):
+    user = models.ForeignKey('User',on_delete=models.CASCADE,related_name='events',null=True,blank=True)
     title = models.CharField(max_length=20)
     startDate = models.DateField()
     endDate = models.DateField()
@@ -16,6 +22,7 @@ class Event(models.Model):
     descr = models.CharField(max_length=200)
 
 class Task(models.Model):
+    user = models.ForeignKey('User',on_delete=models.CASCADE,related_name='tasks',null=True,blank=True)
     title = models.CharField(max_length=20)
     dueDate = models.DateField()
     color = models.CharField()
@@ -40,6 +47,6 @@ class Reminder(models.Model):
     def save(self, *args, **kwargs):
         # class clean method before saving.
         self.clean()
-        super(Reminder, self)
+        super(Reminder, self).save(*args,**kwargs)
 
     

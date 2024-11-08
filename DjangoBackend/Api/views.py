@@ -57,7 +57,10 @@ class UserDelete(APIView):
 class EventCreate(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
-        serializers = EventSerializer(data=request.data)
+        user = request.user
+        event_data = request.data.copy()
+        event_data['user'] = user.id
+        serializers = EventSerializer(data=event_data)
         if serializers.is_valid():
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)
@@ -90,7 +93,10 @@ class EventView(APIView):
 class TaskCreate(APIView):
      permission_classes = [IsAuthenticated]
      def post(self,request):
-        serializers = TaskSerializer(data=request.data)
+        user = request.user
+        event_data = request.data.copy()
+        event_data['user'] = user.id
+        serializers = TaskSerializer(data=event_data)
         if serializers.is_valid():
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)
@@ -123,7 +129,28 @@ class TaskView(APIView):
 class ReminderCreate(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
-        serializers = ReminderSerializer(data=request.data)
+        user = request.user
+        reminder_data = request.data.copy()
+        
+        # if the event is provided and belongs to the user.
+        if reminder_data.get('event'):
+            try:
+                event = Event.objects.get(id=reminder_data['event'])
+                if event.user != user:
+                    return Response({'error': 'Error: event does not belong to the user.'},status=status.HTTP_400_BAD_REQUEST)
+            except Event.DoesNotExist:
+                return Response({'error': 'Event does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # if the task is provided and belongs to the user.
+        if reminder_data.get('task'):
+            try:
+                task = Task.objects.get(id=reminder_data['task'])
+                if task.user != user:
+                    return Response({'error': 'Error: task does not belong to the user.'},status=status.HTTP_400_BAD_REQUEST)
+            except Task.DoesNotExist:
+                return Response({'error': 'Task does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            
+        serializers = ReminderSerializer(data=reminder_data)
         if serializers.is_valid():
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)
@@ -133,7 +160,7 @@ class ReminderEdit(APIView):
     permission_classes = [IsAuthenticated]
     def put(self,request,pk):
         reminder = get_object_or_404(Reminder,pk=pk)
-        serializers = ReminderSerializer(reminder, data=request.data)
+        serializers = ReminderSerializer(reminder,data=request.data)
         if serializers.is_valid():
             serializers.save()
             return Response(serializers.data)
