@@ -21,19 +21,31 @@ export const logInUser = async (userData) => {
     try {
         console.log('Loggin in:', userData);
         const response = await api.post('/users/login/',userData);
+        console.log('Login Response: ',response.data);
         const token = response.data.token;
 
-        // token saved for future authenticated requests.
+        //Store token in local storage.
+        localStorage.setItem('auth_token', token)
+
+        // token saved in axios header for future authenticated requests.
         api.defaults.headers.common['Authorization'] = `Token ${token}`;
         return response.data;
     }
     catch(error) {
-        console.error('Error logging in:', error);
+        if(error.response){
+            console.error('Login error response',error.response.data);
+        }
+        else{
+            console.error('Error logging in:', error);
+        }
         throw error;
     }
 };
 
 export const logOutUser = () => {
+    // Remove token from localStorage.
+    localStorage.removeItem('auth_token');
+    // Remove token from axios headers
     delete api.defaults.headers.common['Authorization'];
 };
 

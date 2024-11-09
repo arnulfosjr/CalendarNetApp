@@ -54,7 +54,7 @@ const UserAccess = () => {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.container}>
                         <Image
-                            source={require('../src/assets/images/logo.jpg')}
+                            source={require('../src/assets/images/logo.png')}
                             style={styles.logo}
                             resizeMode="contain"
                         />

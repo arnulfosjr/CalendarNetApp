@@ -8,12 +8,11 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 
-
 class UserCreate(APIView):
     def post(self,request):
         serializers = UserSerializer(data=request.data)
         if serializers.is_valid():
-            serializers.save()
+            user = serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -22,9 +21,12 @@ class UserLogIn(APIView):
         email = request.data.get('email')
         password = request.data.get('password')
 
-        user = authenticate(request,email=email, password=password)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error':'Invalid email or password 1'},status=status.HTTP_401_UNAUTHORIZED)
 
-        if user is not None:
+        if user.check_password(password): # authenticated using the retrieved user and password.
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key},status=status.HTTP_200_OK)
         

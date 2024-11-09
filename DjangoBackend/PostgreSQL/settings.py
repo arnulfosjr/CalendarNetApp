@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'Api',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -89,6 +97,8 @@ DATABASES = {
         "PORT": "5432", 
     }
 }
+
+AUTH_USER_MODEL = 'Api.User'
 
 
 # Password validation

@@ -66,8 +66,7 @@ const calendarUI = () => {
             <ScrollView style={calendarStyle.scrollView}>
                 <View style={calendarStyle.container}>
                     <View style={calendarStyle.header}>
-                        <AppButton title="Logout" onPress={handleLogout}>
-                        </AppButton>
+                        <AppButton title="Logout" onPress={handleLogout}></AppButton>
                         <Text style={calendarStyle.headerText}>{monthYear}</Text>
                     </View>
                     <View style={calendarStyle.dayNamesDisplay}>
