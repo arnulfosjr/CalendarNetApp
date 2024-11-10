@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, Image, TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
+import { useRouter } from 'expo-router';
 import styles from '../src/styles/styles';
 import AppButton from '../src/components/AppButton';
 import { createUsers, logInUser } from '../src/services/api';
-import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserAccess = () => {
     const [isSignIn, setIsSignIn] = useState(true)
@@ -23,6 +24,7 @@ const UserAccess = () => {
                 const response = await createUsers(userData);
                 if (response) {
                     console.log('new user is in');
+                    await AsyncStorage.setItem('authToken',response.data);
                     router.push('/screens/Calendar');
                 }
                 else {

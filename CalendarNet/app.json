@@ -4,12 +4,11 @@
     "slug": "CalendarNet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "entryPoint": "./app/index.js",
-    "icon": "./app/src/assets/images/logo.jpg",
+    "icon": "./app/src/assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./app/src/assets/images/logo.jpg",
+      "image": "./app/src/assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#2960AC"
     },
@@ -21,14 +20,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": null,
+        "foregroundImage": "./app/src/assets/images/logo.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": null
+      "favicon": "./app/src/assets/images/logo.png"
     },
     "experiments": {
       "typedRoutes": true

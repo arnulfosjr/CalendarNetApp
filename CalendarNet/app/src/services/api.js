@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/version1',
@@ -10,6 +10,7 @@ const api = axios.create({
 export const createUsers = async (userData) => {
     try {
         const response = await api.post('/users/',userData);
+        console.log('Create User Response:',response.data);
         return response.data;
     }
     catch(error) {
@@ -22,14 +23,21 @@ export const logInUser = async (userData) => {
         console.log('Loggin in:', userData);
         const response = await api.post('/users/login/',userData);
         console.log('Login Response: ',response.data);
-        const token = response.data.token;
 
-        //Store token in local storage.
-        localStorage.setItem('auth_token', token)
+        if(response.data && response.data.token){
+            const token = response.data.token;
+            console.log('Token received:',token);
 
-        // token saved in axios header for future authenticated requests.
-        api.defaults.headers.common['Authorization'] = `Token ${token}`;
-        return response.data;
+            //Store token in local storage.
+            await AsyncStorage.setItem('auth_token', token)
+
+            // token saved in axios header for future authenticated requests.
+            api.defaults.headers.common['Authorization'] = `Token ${token}`;
+            return response.data; // Returning the full response.
+        } else {
+            console.log('No token received, check response structured');
+            return null; // Make sure to handle no token case.
+        }
     }
     catch(error) {
         if(error.response){
@@ -42,9 +50,9 @@ export const logInUser = async (userData) => {
     }
 };
 
-export const logOutUser = () => {
+export const logOutUser = async () => {
     // Remove token from localStorage.
-    localStorage.removeItem('auth_token');
+    await AsyncStorage.removeItem('auth_token');
     // Remove token from axios headers
     delete api.defaults.headers.common['Authorization'];
 };
