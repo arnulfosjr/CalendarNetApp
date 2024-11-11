@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from rest_framework.authtoken.models import Token
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -13,6 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
+        # added
+        token, created = Token.objects.get_or_create(user=user)
         return user
 
 class EventSerializer(serializers.ModelSerializer):

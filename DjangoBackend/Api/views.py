@@ -11,14 +11,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class UserCreate(APIView):
-    def post(self,request):
+    def post(self,request, *args, **kwargs):
         logger.debug("User creation attempted")
         serializers = UserSerializer(data=request.data)
         if serializers.is_valid():
             user = serializers.save()
-            logger.info(f"User created with email: {user.email}")
-            return Response(serializers.data,status=status.HTTP_201_CREATED)
-        logger.warning("User creation failed due to invalid data")
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'user': serializers.data,
+                'token': token.key
+            }, status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogIn(APIView):
@@ -39,6 +41,18 @@ class UserLogIn(APIView):
             return Response({'token': token.key},status=status.HTTP_200_OK)
         
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+class UserLogOut(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        user = request.user
+        try:
+            token = Token.objects.get(user=user)
+            token.delete()
+            return Response({'message': 'Successfully logged out'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'error': 'Token not found'}, status=status.HTTP_400_BAD_REQUEST)
     
 class UserEdit(APIView):
     permission_classes = [IsAuthenticated]
