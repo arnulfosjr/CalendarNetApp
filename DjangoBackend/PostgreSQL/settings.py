@@ -60,6 +60,22 @@ REST_FRAMEWORK = {
     ],
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',  # Set to DEBUG to capture all log levels
+        },
+    },
+    'root': {  # Root logger
+        'handlers': ['console'],
+        'level': 'INFO',  # Ensure this is set to DEBUG or INFO
+        'propagate': True,
+    },
+}
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 

@@ -7,17 +7,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+import logging
+logger = logging.getLogger(__name__)
 
 class UserCreate(APIView):
     def post(self,request):
+        logger.debug("User creation attempted")
         serializers = UserSerializer(data=request.data)
         if serializers.is_valid():
             user = serializers.save()
+            logger.info(f"User created with email: {user.email}")
             return Response(serializers.data,status=status.HTTP_201_CREATED)
+        logger.warning("User creation failed due to invalid data")
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogIn(APIView):
     def post(self,request):
+        logger.info("UserLogIn endpoint hit")
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -28,6 +34,8 @@ class UserLogIn(APIView):
 
         if user.check_password(password): # authenticated using the retrieved user and password.
             token, created = Token.objects.get_or_create(user=user)
+            logger.info(f"Generated token: {token.key}")
+            print(f"Generated token: {token.key}")
             return Response({'token': token.key},status=status.HTTP_200_OK)
         
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)

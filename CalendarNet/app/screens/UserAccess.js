@@ -24,7 +24,11 @@ const UserAccess = () => {
                 const response = await createUsers(userData);
                 if (response) {
                     console.log('new user is in');
-                    await AsyncStorage.setItem('authToken',response.data);
+                    if(response.token){
+                        await AsyncStorage.setItem('authToken',response.token);
+                    } else {
+                        console.log('No token received for a new user.')
+                    }
                     router.push('/screens/Calendar');
                 }
                 else {
@@ -74,6 +78,7 @@ const UserAccess = () => {
                             placeholder='Enter Email'
                             value={email}
                             onChangeText={setEmail}
+                            autoCapitalize='none' // prevents auto-capitalization
                         />
                         <Text style={styles.text}>Password:</Text>
                         <TextInput
@@ -82,6 +87,7 @@ const UserAccess = () => {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            autoCapitalize='none'
                         />
                         <AppButton
                             title={isSignIn ? "Sign Up" : "Log In"}

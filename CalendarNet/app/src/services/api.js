@@ -29,7 +29,7 @@ export const logInUser = async (userData) => {
             console.log('Token received:',token);
 
             //Store token in local storage.
-            await AsyncStorage.setItem('auth_token', token)
+            await AsyncStorage.setItem('authToken', token)
 
             // token saved in axios header for future authenticated requests.
             api.defaults.headers.common['Authorization'] = `Token ${token}`;
@@ -52,7 +52,7 @@ export const logInUser = async (userData) => {
 
 export const logOutUser = async () => {
     // Remove token from localStorage.
-    await AsyncStorage.removeItem('auth_token');
+    await AsyncStorage.removeItem('authToken');
     // Remove token from axios headers
     delete api.defaults.headers.common['Authorization'];
 };
