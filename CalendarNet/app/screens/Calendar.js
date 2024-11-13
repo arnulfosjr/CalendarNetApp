@@ -3,12 +3,17 @@ import { View, Text,ScrollView,TouchableOpacity,Modal, SafeAreaView} from 'react
 import calendarStyle from '../src/styles/calendarStyle';
 import popUpStyle from '../src/components/popUpStyle';
 import AppButton from '../src/components/AppButton';
-import { format, startOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek} from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek} from 'date-fns';
 import { logOutUser,createEvents,getEvents } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import Settings from './Settings';
 
-const calendarUI = () => {
+const Tab = createBottomTabNavigator();
+
+const CalendarUI = () => {
     const router = useRouter();
     const date = new Date();
     const monthYear = format(date,'MMMM yyyy'); // Display month and year
@@ -113,4 +118,21 @@ const calendarUI = () => {
     );
 };
 
-export default calendarUI;
+const TabNavigator = () => {
+    return (
+        <Tab.Navigator screenOptions={{ animation: 'fade'}}>
+            <Tab.Screen name="Calendar" component={CalendarUI} />
+            <Tab.Screen name="Settings" component={Settings} />
+        </Tab.Navigator>
+    );
+};
+
+const AppNavigator = () => {
+    return (
+        <NavigationContainer>
+            <TabNavigator />
+        </NavigationContainer>
+    );
+};
+
+export default AppNavigator;
