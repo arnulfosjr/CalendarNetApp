@@ -56,7 +56,6 @@ export const logOutUser = async () => {
         await api.post('/users/logout/');
         // Remove token from localStorage.
         await AsyncStorage.removeItem('authToken');
-        // Remove token from axios headers.
         delete api.defaults.headers.common['Authorization'];
         console.log("User logged out successfully");
     } catch (error) {

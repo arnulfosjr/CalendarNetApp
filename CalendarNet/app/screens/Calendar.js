@@ -44,8 +44,7 @@ const CalendarUI = () => {
     const handleLogout = async () => {
         try {
             await logOutUser(); // Calls backend to log out.
-            await AsyncStorage.removeItem('userToken');
-            console.log('User logged out successfully.')
+            await AsyncStorage.removeItem('authToken');
             router.push('/screens/UserAccess');
         } catch (error) {
             console.error('Error logging out:',error);

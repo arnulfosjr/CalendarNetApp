@@ -20,6 +20,7 @@ export default function App() {
         checkAuth();
     }, []);
 
+
     useEffect(() => {
         if (isAuthenticated !== null){
             if (isAuthenticated){
