@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import {Ionicons} from '@expo/vector-icons';
 import Settings from './Settings';
 
 const Tab = createBottomTabNavigator();
@@ -120,9 +121,17 @@ const CalendarUI = () => {
 
 const TabNavigator = () => {
     return (
-        <Tab.Navigator screenOptions={{ animation: 'fade'}}>
-            <Tab.Screen name="Calendar" component={CalendarUI} />
-            <Tab.Screen name="Settings" component={Settings} />
+        <Tab.Navigator screenOptions={{ animation: 'fade' }}>
+            <Tab.Screen name="Calendar" component={CalendarUI} options={{
+                tabBarIcon:({ color, size }) => (
+                    <Ionicons name="calendar" size={size} color={color}/>
+                )
+            }}/>
+            <Tab.Screen name="Settings" component={Settings} options={{
+                tabBarIcon:({ color, size }) => (
+                    <Ionicons name="settings" size={size} color={color}/>
+                )
+            }}/>
         </Tab.Navigator>
     );
 };
