@@ -15,12 +15,19 @@ class UserCreate(APIView):
         logger.debug("User creation attempted")
         serializers = UserSerializer(data=request.data)
         if serializers.is_valid():
-            user = serializers.save()
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({
-                'user': serializers.data,
-                'token': token.key
-            }, status=status.HTTP_201_CREATED)
+            try:
+                user = serializers.save()
+                user.save()
+                logger.debug(f"User created views.py: {user}")
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({
+                    'user': serializers.data,
+                    'token': token.key
+                }, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                logger.error(f"Error creating user views.py: {str(e)}")
+                return Response({"detail": "Error creating user views.py"}, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogIn(APIView):

@@ -4,7 +4,7 @@ import calendarStyle from '../src/styles/calendarStyle';
 import popUpStyle from '../src/components/popUpStyle';
 import AppButton from '../src/components/AppButton';
 import { format, startOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek} from 'date-fns';
-import { createEvents,getEvents } from '../src/services/api';
+import { logOutUser,createEvents,getEvents } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
@@ -37,6 +37,7 @@ const calendarUI = () => {
 
     const handleLogout = async () => {
         try {
+            await logOutUser(); // Calls backend to log out.
             await AsyncStorage.removeItem('userToken');
             console.log('User logged out successfully.')
             router.push('/screens/UserAccess');

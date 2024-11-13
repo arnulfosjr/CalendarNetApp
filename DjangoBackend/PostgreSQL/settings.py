@@ -71,7 +71,7 @@ LOGGING = {
     },
     'root': {  # Root logger
         'handlers': ['console'],
-        'level': 'INFO',  # Ensure this is set to DEBUG or INFO
+        'level': 'DEBUG',  # Ensure this is set to DEBUG or INFO
         'propagate': True,
     },
 }

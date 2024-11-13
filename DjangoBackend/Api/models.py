@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from rest_framework.authtoken.models import Token as DefaultToken
-from django.utils.crypto import get_random_string
 
 
 class UserManager(BaseUserManager):

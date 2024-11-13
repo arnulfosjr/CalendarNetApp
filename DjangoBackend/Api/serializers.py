@@ -1,22 +1,40 @@
 from rest_framework import serializers
 from .models import *
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError
+from django.db import transaction
+import logging
+logger = logging.getLogger('console')
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    token = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['email','password','token']
 
     def create(self, validated_data): # create user and to hash password.
-        user = User.objects.create(
-            email=validated_data['email']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        # added
-        token, created = Token.objects.get_or_create(user=user)
-        return user
+        try:
+            with transaction.atomic():
+                # create user and save in database.
+                user = User.objects.create(
+                    email=validated_data['email']
+                )
+                user.set_password(validated_data['password']) # hash password
+                user.save()
+                 # Check if user is really saved
+                if not user.id:
+                    raise ValidationError("User creation failed. User ID not set.")
+        
+                # token creation for user
+                token, created = Token.objects.get_or_create(user=user)
+                logger.debug("User ID: %d, Token Created: %s", user.id, token.key)
+                user.token = token.key
+                return user
+        except Exception as e:
+            logger.error(f"Error creating user: {str(e)}")
+            raise ValidationError(f"Error creating user: {str(e)}")
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:

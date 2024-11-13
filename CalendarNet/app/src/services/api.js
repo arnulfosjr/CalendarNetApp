@@ -51,10 +51,18 @@ export const logInUser = async (userData) => {
 };
 
 export const logOutUser = async () => {
-    // Remove token from localStorage.
-    await AsyncStorage.removeItem('authToken');
-    // Remove token from axios headers
-    delete api.defaults.headers.common['Authorization'];
+    try {
+        // Make a request to the backend.
+        await api.post('/users/logout/');
+        // Remove token from localStorage.
+        await AsyncStorage.removeItem('authToken');
+        // Remove token from axios headers.
+        delete api.defaults.headers.common['Authorization'];
+        console.log("User logged out successfully");
+    } catch (error) {
+        console.log("Error logging out:", error);
+    }
+    
 };
 
 export const editUsers = async (userId,userData) => {
