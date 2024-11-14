@@ -15,9 +15,17 @@ const popUpStyle = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
     },
-    popUpText:{
-        fontSize:30,
+    popUpHeader:{
+        fontSize:22,
         marginBottom:10,
+        fontWeight:'bold',
+    },
+    popUpText:{
+        fontSize:18,
+        marginBottom:10,
+        backgroundColor:'white',
+        padding:10,
+        borderRadius:5,
     },
 });
 

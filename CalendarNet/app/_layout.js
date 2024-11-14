@@ -14,7 +14,6 @@ export default function App() {
     useEffect(() => {
         const checkAuth = async () => {
             const token = await AsyncStorage.getItem('authToken');
-            console.log('Saved token:',token)
             setIsAuthenticated(!!token); // Sets true if token exists, false it doesn't.
         };
         checkAuth();
