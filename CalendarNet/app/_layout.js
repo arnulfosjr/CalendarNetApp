@@ -1,9 +1,6 @@
 import React, { useState, useEffect,useLayoutEffect} from 'react';
 import { GestureHandlerRootView} from 'react-native-gesture-handler';
 import { Text } from 'react-native';
-import UserAccess from './screens/UserAccess';
-import Calendar from './screens/Calendar';
-import Settings from './screens/Settings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Slot, useRouter} from 'expo-router';
 
