@@ -108,9 +108,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "CalendarNet",
         "USER": "postgres",
-        "PASSWORD": "Apple64@",
+        "PASSWORD": "Silverspear81",
         "HOST": "localhost",
-        "PORT": "5432", 
+        "PORT": "5433", 
     }
 }
 
