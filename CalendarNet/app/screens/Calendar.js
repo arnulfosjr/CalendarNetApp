@@ -9,12 +9,15 @@ import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
+import task from './task';
 import EventModal from '../src/components/EventModal';
 
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 const CalendarUI = () => {
     const router = useRouter();
@@ -169,7 +172,12 @@ const CalendarUI = () => {
 
 const TabNavigator = () => {
     return (
-        <Tab.Navigator screenOptions={{ animation: 'fade' }}>
+        <Tab.Navigator 
+        screenOptions={{ 
+            animation: 'fade', 
+            headerShown:false,
+            }}
+        >
             <Tab.Screen name="Calendar" component={CalendarUI} options={{
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons name="calendar" size={size} color={color} />
@@ -187,7 +195,35 @@ const TabNavigator = () => {
 const AppNavigator = () => {
     return (
         <NavigationContainer>
-            <TabNavigator />
+            <Drawer.Navigator initialRouteName="Calendar">
+                <Drawer.Screen
+                    name="Calendar"
+                    component={TabNavigator}
+                    options={{
+                        drawerIcon: ({ color, size}) => (
+                            <Ionicons name="calendar" size={size} color={color} />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name="task"
+                    component={task}
+                    options={{
+                        drawerIcon: ({ color, size}) => (
+                            <Ionicons name="pencil" size={size} color={color} />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={{
+                        drawerIcon: ({ color, size}) => (
+                            <Ionicons name="settings" size={size} color={color} />
+                        )
+                    }}
+                />
+            </Drawer.Navigator>
         </NavigationContainer>
     );
 };
