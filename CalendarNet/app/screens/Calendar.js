@@ -8,12 +8,12 @@ import { createTasks, editTasks, getTask, deleteTask } from '../src/services/api
 import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
-import task from './task';
+import Task from './Task';
 import EventModal from '../src/components/EventModal';
 
 const Tab = createBottomTabNavigator();
@@ -26,6 +26,7 @@ const CalendarUI = () => {
     const start = startOfMonth(date);  // start of the month number
     const end = endOfMonth(date);      // end of the month number.
     const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 0 });
+
     const [isVisible, setIsVisible] = useState(false);
     const [selectedDay, setSelectedDay] = useState(null);
     const [events, setEvent] = useState([]);
@@ -178,12 +179,12 @@ const TabNavigator = () => {
             headerShown:false,
             }}
         >
-            <Tab.Screen name="Calendar" component={CalendarUI} options={{
+            <Tab.Screen name="Tasks" component={Task} options={{
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons name="calendar" size={size} color={color} />
                 )
             }} />
-            <Tab.Screen name="Settings" component={Settings} options={{
+            <Tab.Screen name="Text Prompt" component={Settings} options={{
                 tabBarIcon: ({ color, size }) => (
                     <Ionicons name="settings" size={size} color={color} />
                 )
@@ -194,11 +195,16 @@ const TabNavigator = () => {
 
 const AppNavigator = () => {
     return (
-        <NavigationContainer>
-            <Drawer.Navigator initialRouteName="Calendar">
+        <NavigationContainer initialRouteName="Calendar">
+            <Drawer.Navigator 
+                screenOptions={{
+                    drawerActiveTintColor:'white',
+                    drawerActiveBackgroundColor: 'blue',
+                    drawerType:'slide',
+                }}>
                 <Drawer.Screen
                     name="Calendar"
-                    component={TabNavigator}
+                    component={CalendarUI}
                     options={{
                         drawerIcon: ({ color, size}) => (
                             <Ionicons name="calendar" size={size} color={color} />
@@ -206,11 +212,11 @@ const AppNavigator = () => {
                     }}
                 />
                 <Drawer.Screen
-                    name="task"
-                    component={task}
+                    name="Tasks"
+                    component={Task}
                     options={{
                         drawerIcon: ({ color, size}) => (
-                            <Ionicons name="pencil" size={size} color={color} />
+                            <Ionicons name="checkbox" size={size} color={color} />
                         )
                     }}
                 />
@@ -219,7 +225,7 @@ const AppNavigator = () => {
                     component={Settings}
                     options={{
                         drawerIcon: ({ color, size}) => (
-                            <Ionicons name="settings" size={size} color={color} />
+                            <Ionicons name="settings-sharp" size={size} color={color} />
                         )
                     }}
                 />
@@ -227,5 +233,4 @@ const AppNavigator = () => {
         </NavigationContainer>
     );
 };
-
 export default AppNavigator;
