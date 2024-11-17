@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, Image, TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import styles from '../src/styles/styles';
-import AppButton from '../src/components/AppButton';
+import UserAccessButton from '../src/components/UserAccessButton';
 import { createUsers, logInUser } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -89,7 +89,7 @@ const UserAccess = () => {
                             secureTextEntry
                             autoCapitalize='none'
                         />
-                        <AppButton
+                        <UserAccessButton
                             title={isSignIn ? "Sign Up" : "Log In"}
                             onPress={userSubmission}
                         />

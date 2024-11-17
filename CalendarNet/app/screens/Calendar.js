@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
-import AppButton from '../src/components/AppButton';
+import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
 import { logOutUser, createEvents, editEvents, getEvents, deleteEvents } from '../src/services/api';
 import { createTasks, editTasks, getTask, deleteTask } from '../src/services/api';
@@ -159,7 +159,7 @@ const CalendarUI = () => {
             >
                 <View style={calendarStyle.container}>
                     <View style={calendarStyle.header}>
-                        <AppButton title="Logout" onPress={handleLogout}></AppButton>
+                        <CalendarButton title="Logout" onPress={handleLogout}></CalendarButton>
                         <Text style={calendarStyle.headerText}>{format(currentDate,'MMMM yyyy')}</Text>
                     </View>
                     <View style={calendarStyle.dayNamesDisplay}>

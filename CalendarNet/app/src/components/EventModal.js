@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { View, Modal, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import popUpStyle from '../styles/popUpStyle';
-import AppButton from './AppButton';
+import CalendarButton from './CalendarButton';
 import { format } from 'date-fns';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
@@ -64,7 +64,7 @@ const EventModal = ({
         <Modal animationType="fade" transparent={true} visible={isVisible}>
             <View style={popUpStyle.Overlay}>
                 <View style={popUpStyle.Content}>
-                <AppButton title="Close" onPress={() => setIsVisible(false)}/>
+                <CalendarButton title="Close" onPress={() => setIsVisible(false)}/>
                     <Text style={popUpStyle.Header}>
                         {selectedDay ? format(selectedDay, 'EEEE, MMMM dd') : ''}
                     </Text>
@@ -139,7 +139,7 @@ const EventModal = ({
                                 onChangeText={setEventDescr}
                                 style={popUpStyle.text}
                             />
-                            <AppButton title="Save" onPress={AddEvent} />
+                            <CalendarButton title="Save" onPress={AddEvent} />
                         </>
                     ) : (
                         <ScrollView>
