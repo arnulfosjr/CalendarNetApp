@@ -5,6 +5,18 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from rest_framework.authtoken.models import Token as DefaultToken
 
+COLOR_CHOICES = [
+    ('#FF5733', 'Red'),
+    ('#33FF57', 'Green'),
+    ('#3357FF', 'Blue'),
+    ('#F1C40F', 'Yellow'),
+    ('#9B59B6', 'Purple'),
+    ('#1ABC9C', 'Teal'),
+    ('#E74C3C', 'Coral'),
+    ('#34495E', 'Gray'),
+    ('#2ECC71', 'Lime'),
+    ('#3498DB', 'Sky Blue'),
+]
 
 class UserManager(BaseUserManager):
     def create_user(self,email,password=None,**extra_fields):
@@ -46,14 +58,18 @@ class Event(models.Model):
     title = models.CharField(max_length=20)
     startDate = models.DateField()
     endDate = models.DateField()
-    color = models.CharField()
+    color = models.CharField(max_length=7,choices=COLOR_CHOICES)
     descr = models.CharField(max_length=200)
+
+    def clean(self):
+        if self.endDate < self.startDate:
+            raise ValidationError('End date cannot be before Start date.')
 
 class Task(models.Model):
     user = models.ForeignKey('User',on_delete=models.CASCADE,related_name='tasks',null=True,blank=True)
     title = models.CharField(max_length=20)
     dueDate = models.DateField()
-    color = models.CharField()
+    color = models.CharField(max_length=7,choices=COLOR_CHOICES)
     descr = models.CharField(max_length=200)
     timeCreated = models.DateTimeField(auto_now_add=True)
     updateTimeCreated = models.DateTimeField(auto_now=True)

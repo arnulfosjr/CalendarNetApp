@@ -63,10 +63,12 @@ const CalendarUI = () => {
 
         if(scroll < 0){
             setCurrentDate(backward => subMonths(backward,1));
+            
         }
         else if(scroll > 0){
             setCurrentDate(forward => addMonths(forward,1));
         }
+
     };
 
     const handleLogout = async () => {

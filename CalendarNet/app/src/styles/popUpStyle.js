@@ -12,15 +12,18 @@ const popUpStyle = StyleSheet.create({
         padding:20,
         backgroundColor:'lightgrey',
         borderRadius:10,
-        alignItems:'center',
-        justifyContent:'center',
+        alignItems:'stretch',
+        justifyContent:'stretch',
     },
-    popUpHeader:{
+    Header:{
         fontSize:22,
         marginBottom:10,
         fontWeight:'bold',
     },
-    popUpText:{
+    textTitle:{
+        fontSize:18, 
+    },
+    text:{
         fontSize:18,
         marginBottom:10,
         backgroundColor:'white',
