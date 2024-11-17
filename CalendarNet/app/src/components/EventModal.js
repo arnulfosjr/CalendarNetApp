@@ -166,5 +166,4 @@ const styles = StyleSheet.create({
         borderWidth:3,
     }
 });
-
 export default EventModal;

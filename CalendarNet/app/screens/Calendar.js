@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
+import { StyleSheet,View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
@@ -9,7 +9,7 @@ import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator,DrawerContentScrollView,DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
@@ -20,7 +20,6 @@ const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const CalendarUI = () => {
-    const router = useRouter();
     const [currentDate,setCurrentDate] = useState(new Date());
     const [weeksInMonth,setWeeksInMonth] = useState([]);
     
@@ -69,16 +68,6 @@ const CalendarUI = () => {
             setCurrentDate(forward => addMonths(forward,1));
         }
 
-    };
-
-    const handleLogout = async () => {
-        try {
-            await logOutUser(); // Calls backend to log out.
-            await AsyncStorage.removeItem('authToken');
-            router.push('/screens/UserAccess');
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
     };
 
     const userOnePress = (day) => {
@@ -159,7 +148,6 @@ const CalendarUI = () => {
             >
                 <View style={calendarStyle.container}>
                     <View style={calendarStyle.header}>
-                        <CalendarButton title="Logout" onPress={handleLogout}></CalendarButton>
                         <Text style={calendarStyle.headerText}>{format(currentDate,'MMMM yyyy')}</Text>
                     </View>
                     <View style={calendarStyle.dayNamesDisplay}>
@@ -211,10 +199,35 @@ const CalendarUI = () => {
     );
 };
 
+const LogOutSideBar = (props) => {
+    const router = useRouter();
+    const handleLogout = async () => {
+        try {
+            await logOutUser(); // Calls backend to log out.
+            await AsyncStorage.removeItem('authToken');
+            router.push('/screens/UserAccess');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+    return (
+        <DrawerContentScrollView {...props}>
+            <DrawerItemList {...props} />
+            <View styles={styles.logoutContainer}>
+                <TouchableOpacity styles={styles.logoutButton} onPress={handleLogout}>
+                    <Ionicons name='log-out-outline' size={30} color='red' />
+                    <Text styles={styles.logoutButton}>Logout</Text>
+                </TouchableOpacity>
+            </View>
+        </DrawerContentScrollView>
+    );
+};
+
 const AppNavigator = () => {
     return (
         <NavigationContainer initialRouteName="Calendar">
             <Drawer.Navigator 
+                drawerContent={(props) => <LogOutSideBar {...props} />}
                 screenOptions={{
                     drawerActiveTintColor:'white',
                     drawerActiveBackgroundColor: 'blue',
@@ -251,4 +264,22 @@ const AppNavigator = () => {
         </NavigationContainer>
     );
 };
+
+const styles = StyleSheet.create({
+    logoutContainer: {
+        marginTop: 20,
+        paddingHorizontal: 15,
+    },
+    logoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+    },
+    logoutText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: 'red',
+    },
+});
+
 export default AppNavigator;
