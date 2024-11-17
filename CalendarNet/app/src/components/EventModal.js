@@ -6,18 +6,7 @@ import CalendarButton from './CalendarButton';
 import { format } from 'date-fns';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
-const colorOptions = [
-    { value: '#FF5733', label: 'Red' },
-    { value: '#33FF57', label: 'Green' },
-    { value: '#3357FF', label: 'Blue' },
-    { value: '#F1C40F', label: 'Yellow' },
-    { value: '#9B59B6', label: 'Purple' },
-    { value: '#1ABC9C', label: 'Teal' },
-    { value: '#E74C3C', label: 'Coral' },
-    { value: '#34495E', label: 'Gray' },
-    { value: '#2ECC71', label: 'Lime' },
-    { value: '#3498DB', label: 'Sky Blue' },
-  ];
+const colorOptions = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#34495E', '#2ECC71', '#3498DB'];
 
 const EventModal = ({
     isVisible,
@@ -122,13 +111,13 @@ const EventModal = ({
                             <View style={styles.container}>
                                 {colorOptions.map((color) => (
                                     <TouchableOpacity
-                                        key={color.value}
+                                        key={color}
                                         style={[
                                             styles.colorBox, 
-                                            { backgroundColor: color.value }, 
-                                            eventColor === color.value && styles.selectedBox,
+                                            { backgroundColor: color }, 
+                                            eventColor === color && styles.selectedBox,
                                         ]}
-                                        onPress={() => setEventColor(color.value)}
+                                        onPress={() => setEventColor(color)}
                                     />
                                 ))}
                             </View>
