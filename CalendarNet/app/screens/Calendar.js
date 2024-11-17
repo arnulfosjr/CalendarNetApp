@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import AppButton from '../src/components/AppButton';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
 import { logOutUser, createEvents, editEvents, getEvents, deleteEvents } from '../src/services/api';
 import { createTasks, editTasks, getTask, deleteTask } from '../src/services/api';
 import { createReminder, editReminder } from '../src/services/api';
@@ -21,12 +21,9 @@ const Drawer = createDrawerNavigator();
 
 const CalendarUI = () => {
     const router = useRouter();
-    const date = new Date();
-    const monthYear = format(date, 'MMMM yyyy'); // Display month and year
-    const start = startOfMonth(date);  // start of the month number
-    const end = endOfMonth(date);      // end of the month number.
-    const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 0 });
-
+    const [currentDate,setCurrentDate] = useState(new Date());
+    const [weeksInMonth,setWeeksInMonth] = useState([]);
+    
     const [isVisible, setIsVisible] = useState(false);
     const [selectedDay, setSelectedDay] = useState(null);
     const [events, setEvent] = useState([]);
@@ -42,11 +39,15 @@ const CalendarUI = () => {
     const [eventDescr, setEventDescr] = useState('');
     const [editEventID, setEditEventID] = useState(null);
 
-    const weeksInMonth = weeks.map(startOfWeek => {
-        const endOfCurrentWeek = endOfWeek(startOfWeek, { weekStartsOn: 0 });
-        const daysInWeek = eachDayOfInterval({ start: startOfWeek, end: endOfCurrentWeek });
-        return daysInWeek;
-    });
+    useEffect(() => {
+        const start = startOfMonth(currentDate);
+        const end = endOfMonth(currentDate);
+        const weeks = eachWeekOfInterval({start,end},{weekStartsOn: 0}).map(startOfWeek => {
+            const endOfCurrentWeek = endOfWeek(startOfWeek, { weekStartsOn: 0});
+            return eachDayOfInterval({ start: startOfWeek, end: endOfCurrentWeek});
+        });
+        setWeeksInMonth(weeks);
+    },[currentDate]);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -56,6 +57,17 @@ const CalendarUI = () => {
         };
         fetchEvents();
     }, []);
+
+    const handleCalendarScroll = (event) => {
+        const scroll = event.nativeEvent.contentOffset.y;
+
+        if(scroll < 0){
+            setCurrentDate(backward => subMonths(backward,1));
+        }
+        else if(scroll > 0){
+            setCurrentDate(forward => addMonths(forward,1));
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -115,13 +127,38 @@ const CalendarUI = () => {
         setEvent(events.filter(events => events.id !== eventId));
     }
 
+    const TabNavigator = () => {
+        return (
+            <Tab.Navigator 
+            screenOptions={{ 
+                animation: 'fade', 
+                headerShown:false,
+                }}
+            >
+                <Tab.Screen name="Tasks" component={Task} options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="calendar" size={size} color={color} />
+                    )
+                }} />
+                <Tab.Screen name="Text Prompt" component={Settings} options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="settings" size={size} color={color} />
+                    )
+                }} />
+            </Tab.Navigator>
+        );
+    };
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <ScrollView style={calendarStyle.scrollView}>
+            <ScrollView style={calendarStyle.scrollView}
+                onScrollEndDrag={handleCalendarScroll}
+                scrollEventThrottle={16}
+            >
                 <View style={calendarStyle.container}>
                     <View style={calendarStyle.header}>
                         <AppButton title="Logout" onPress={handleLogout}></AppButton>
-                        <Text style={calendarStyle.headerText}>{monthYear}</Text>
+                        <Text style={calendarStyle.headerText}>{format(currentDate,'MMMM yyyy')}</Text>
                     </View>
                     <View style={calendarStyle.dayNamesDisplay}>
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu ', 'Fri ', 'Sat '].map(day => (
@@ -135,7 +172,7 @@ const CalendarUI = () => {
                                     userOnePress(day)} onLongPress={() => userLongPress(day)}>
                                     <View >
                                         <Text style={calendarStyle.dayBoxText}>
-                                            {day.getMonth() === date.getMonth() ? format(day, 'd') : ''}
+                                            {format(day, 'd')}
                                         </Text>
                                     </View>
                                 </TouchableOpacity>
@@ -167,29 +204,8 @@ const CalendarUI = () => {
                     />
                 </View>
             </ScrollView>
+            
         </SafeAreaView>
-    );
-};
-
-const TabNavigator = () => {
-    return (
-        <Tab.Navigator 
-        screenOptions={{ 
-            animation: 'fade', 
-            headerShown:false,
-            }}
-        >
-            <Tab.Screen name="Tasks" component={Task} options={{
-                tabBarIcon: ({ color, size }) => (
-                    <Ionicons name="calendar" size={size} color={color} />
-                )
-            }} />
-            <Tab.Screen name="Text Prompt" component={Settings} options={{
-                tabBarIcon: ({ color, size }) => (
-                    <Ionicons name="settings" size={size} color={color} />
-                )
-            }} />
-        </Tab.Navigator>
     );
 };
 
