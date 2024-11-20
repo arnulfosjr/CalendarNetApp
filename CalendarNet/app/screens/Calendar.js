@@ -14,6 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
 import Task from './Task';
+import TextPrompt from './TextPrompt';
 import EventModal from '../src/components/EventModal';
 
 const Tab = createBottomTabNavigator();
@@ -70,12 +71,39 @@ const CalendarUI = () => {
 
     };
 
+    const parseDateFormat = (dateStr) => {
+        // format: "YYYY-MM-DD HH:mm:ss-08"
+        // checks format of string
+        if(!dateStr){
+            console.error("Invalid date string", dateStr);
+            return null;
+        }
+        // handles the 'YYYY-MM-DD' format
+        if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)){
+            return new Date(`${dateStr}T00:00:00Z`)
+        }
+
+        const parts = dateStr.split(' ');
+        if(parts.length !==3){
+            console.error("Date String Format Incorrect.",dateStr);
+            return null;        
+        }
+        const datePart = parts[0]; // YYYY-MM-DD
+        const timePart = parts[1]; // HH:mm:ss
+        const timeZonePart = parts[2]; // -08
+
+        const ISODate = `${datePart}T${timePart}:00${timeZonePart}:00`;
+        return new Date(ISODate);
+    };
+
     const userOnePress = (day) => {
         setSelectedDay(day);
         setAddingEvent(false);
-        const filteredEvents = events.filter(event =>
-            format(new Date(event.date), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
-        );
+        const selectedDateFormatted = format(day,'yyyy-MM-dd');
+
+        const filteredEvents = events.filter(event => {
+            return event.date === selectedDateFormatted;
+        });
         setDayOfEvent(filteredEvents);
         setIsVisible(true);
     };
@@ -89,14 +117,15 @@ const CalendarUI = () => {
     const AddEvent = async () => {
         const newEvent = {
             title: eventTitle,
-            startDate: new Date(eventStartDate),
-            endDate: new Date(eventEndDate),
+            startDate: eventStartDate,
+            endDate: eventEndDate,
             color: eventColor,
             descr: eventDescr,
         };
         const eventCreation = await createEvents(newEvent);
         setEvent([...events, eventCreation]);
         setIsVisible(false);
+        closeEventModal();
     };
 
     const EditEvent = async () => {
@@ -117,6 +146,16 @@ const CalendarUI = () => {
         await deleteEvents(eventId);
         setEvent(events.filter(events => events.id !== eventId));
     }
+
+    const closeEventModal = () => {
+        setIsVisible(false);
+        setEventTitle('');
+        setEventStartDate(null);
+        setEventEndDate(null);
+        setEventColor(null);
+        setEventDescr('');
+    };
+
 
     const TabNavigator = () => {
         return (
@@ -248,6 +287,15 @@ const AppNavigator = () => {
                     options={{
                         drawerIcon: ({ color, size}) => (
                             <Ionicons name="checkbox" size={size} color={color} />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name="Text Prompt"
+                    component={TextPrompt}
+                    options={{
+                        drawerIcon: ({ color, size}) => (
+                            <Ionicons name="create-outline" size={size} color={color} />
                         )
                     }}
                 />

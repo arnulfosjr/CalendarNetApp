@@ -12,6 +12,7 @@ urlpatterns = [
     path('event/<int:pk>/',EventView.as_view(),name='eventView'),
     path('event/edit/<int:pk>/',EventEdit.as_view(),name='eventEdit'),
     path('event/delete/<int:pk>/',EventDelete.as_view(),name='eventDelete'),
+    path('events/',EventList.as_view(),name='eventList'),
     path('task/',TaskCreate.as_view(),name='taskCreate'),
     path('task/<int:pk>/',TaskView.as_view(),name='taskView'),
     path('task/edit/<int:pk>/',TaskEdit.as_view(),name='taskEdit'),

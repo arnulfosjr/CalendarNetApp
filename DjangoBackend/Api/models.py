@@ -56,19 +56,23 @@ class User(AbstractBaseUser):
 class Event(models.Model):
     user = models.ForeignKey('User',on_delete=models.CASCADE,related_name='events',null=True,blank=True)
     title = models.CharField(max_length=20)
-    startDate = models.DateField()
-    endDate = models.DateField()
+    startDate = models.DateTimeField()
+    endDate = models.DateTimeField()
     color = models.CharField(max_length=7,choices=COLOR_CHOICES)
     descr = models.CharField(max_length=200)
 
     def clean(self):
         if self.endDate < self.startDate:
             raise ValidationError('End date cannot be before Start date.')
+    
+    @property
+    def date(self):
+        return self.startDate.date()
 
 class Task(models.Model):
     user = models.ForeignKey('User',on_delete=models.CASCADE,related_name='tasks',null=True,blank=True)
     title = models.CharField(max_length=20)
-    dueDate = models.DateField()
+    dueDate = models.DateTimeField()
     color = models.CharField(max_length=7,choices=COLOR_CHOICES)
     descr = models.CharField(max_length=200)
     timeCreated = models.DateTimeField(auto_now_add=True)

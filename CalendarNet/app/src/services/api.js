@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/version1',
-    timeout: 5000,
+    timeout: 10000,
     headers: { 'Content-Type': 'application/json'},
 });
 
@@ -86,11 +86,30 @@ export const deleteUsers = async (userId) => {
 
 export const createEvents = async (eventData) => {
     try {
-        const response = await api.post('/event/',eventData);
+        const token = await AsyncStorage.getItem('authToken');
+        if(!token){
+            console.error('No Token found');
+            return;
+        }
+        const formatDateData = {
+            ...eventData,
+            startDate: eventData.startDate.toISOString(),
+            endDate: eventData.endDate.toISOString(),
+        };
+        const response = await api.post('/event/',formatDateData, {
+            headers: {
+                Authorization: `Token ${token}`,
+            },
+        });
         return response.data;
     }
     catch(error) {
-        console.error('Error creating event:', error);
+        if(error.response){
+            console.error('Error creating event:', error.response.data);
+            console.error('Error status:', error.response.status);
+        } else {
+            console.log('Error:',error)
+        }
     }
 };
 
@@ -106,11 +125,25 @@ export const editEvents = async (eventId,eventData) => {
 
 export const getEvents = async (eventId) => {
     try {
-        const response = await api.get('/event/');
+        const token = await AsyncStorage.getItem('authToken');
+        if(!token){
+            console.error('Token not found for getEvents.');
+            return;
+        }
+        const response = await api.get('/events/', {
+            headers : {
+                Authorization: `Token ${token}`,
+            },
+        });
         return response.data;
     }
     catch(error) {
-        console.error('Error getting event:', error);
+        if(error.response){
+            console.error('Error creating event:', error.response.data);
+            console.error('Error status:', error.response.status);
+        } else {
+            console.log('Error:',error)
+        }
     }
 };
 

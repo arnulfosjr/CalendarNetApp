@@ -39,9 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = ['user','title','startDate','endDate','color','descr','date']
 
-        def create(self, validated_data):
+        def create(self, validated_data,request):
+            print("Received event data:",request.data)
             # gives the authenticated user making the request, to associate the event with the user.
             user = self.context['request'].user 
             event = Event.objects.create(

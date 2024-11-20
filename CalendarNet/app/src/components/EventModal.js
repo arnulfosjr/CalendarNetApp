@@ -1,6 +1,6 @@
 // src/components/EventModal.js
 import React, { useEffect } from 'react';
-import { View, Modal, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Modal, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
 import popUpStyle from '../styles/popUpStyle';
 import CalendarButton from './CalendarButton';
 import { format } from 'date-fns';
@@ -33,21 +33,26 @@ const EventModal = ({
 }) => {
     useEffect(() => {
         if (isVisible && selectedDay) {
-            handleDefaultDate();
+            handleStartDefaultDate();
+            handleEndDefaultDate();
         }
     }, [isVisible, selectedDay]);
     
-    const handleDefaultDate = () => {
+    const handleStartDefaultDate = () => {
         if(selectedDay) {
             const defaultStartDate = new Date(selectedDay);
             defaultStartDate.setHours(12,0,0,0);
             setEventStartDate(defaultStartDate);
-
-            const defaultEndDate = new Date(selectedDay);
-            defaultEndDate.setHours(12,0,0,0);
-            setEventEndDate(defaultEndDate);   
         }
     };
+
+    const handleEndDefaultDate = () => {
+        if(selectedDay){
+            const defaultEndDate = new Date(selectedDay);
+            defaultEndDate.setHours(12,0,0,0);
+            setEventEndDate(defaultEndDate); 
+        }
+    }
 
     return (
         <Modal animationType="fade" transparent={true} visible={isVisible}>
@@ -68,10 +73,10 @@ const EventModal = ({
                                 style={popUpStyle.text}
                             />
                             <Text style={popUpStyle.textTitle}>Start Date:</Text>
-                            <TouchableOpacity onPress={handleDefaultDate}>
+                            <TouchableOpacity onPress={() => setStartDateTimePicker(true)}>
                                 <TextInput
                                     placeholder='Start Date'
-                                    value={eventStartDate ? format(new Date(eventStartDate), 'yyyy-MM-dd HH:mm a') : ''}
+                                    value={eventStartDate ? format(new Date(eventStartDate), 'yyyy-MM-dd hh:mm:ss a') : ''}
                                     onChangeText={setEventStartDate}
                                     editable={false}
                                     style={popUpStyle.text}
@@ -88,10 +93,10 @@ const EventModal = ({
                                 onCancel={() => setStartDateTimePicker(false)}
                             />
                             <Text style={popUpStyle.textTitle}>End Date:</Text>
-                            <TouchableOpacity onPress={handleDefaultDate}>
+                            <TouchableOpacity onPress={() => setEndDateTimePicker(true)}>
                                 <TextInput
                                     placeholder='End Date'
-                                    value={eventEndDate ? format(new Date(eventEndDate), 'yyyy-MM-dd HH:mm a') : ''}
+                                    value={eventEndDate ? format(new Date(eventEndDate), 'yyyy-MM-dd hh:mm:ss a') : ''}
                                     onChangeText={setEventEndDate}
                                     editable={false}
                                     style={popUpStyle.text}
@@ -131,15 +136,17 @@ const EventModal = ({
                             <CalendarButton title="Save" onPress={AddEvent} />
                         </>
                     ) : (
-                        <ScrollView>
-                            {dayOfEvent.map((eventx, index) => (
-                                <View key={index} style={popUpStyle.Content}>
-                                    <Text>{eventx.title}</Text>
-                                    <Text>{format(new Date(eventx.startDate), 'p')} - {format(new Date(eventx.endDate), 'p')}</Text>
-                                    <Text>{eventx.descr}</Text>
-                                </View>
-                            ))}
-                        </ScrollView>
+                            <FlatList
+                                data={dayOfEvent}
+                                renderItem={({item}) => (
+                                    <View style={popUpStyle.Content}>
+                                        <Text>{item.title}</Text>
+                                        <Text>{format(new Date(item.startDate), 'p')} - {format(new Date(item.endDate), 'p')}</Text>
+                                    </View>
+                                )}
+                                keyExtractor={(item,index) => (item.id ? item.toString() : `event-${index}`)}
+                                ListEmptyComponent={<Text> No Events on this day.</Text>}
+                                />
                     )}
                 </View>
             </View>

@@ -4,9 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -120,6 +121,10 @@ class EventView(APIView):
         event = get_object_or_404(Event,pk=pk)
         serializers = EventSerializer(event)
         return Response(serializers.data)
+    
+class EventList(generics.ListAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
 class TaskCreate(APIView):
      permission_classes = [IsAuthenticated]
