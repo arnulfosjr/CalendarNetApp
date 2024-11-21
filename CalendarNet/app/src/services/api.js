@@ -137,13 +137,11 @@ export const getEvents = async (eventId) => {
             console.error('Token not found for getEvents.');
             return;
         }
-        console.log("Token being used for fetching events: ", token);
         const response = await api.get('/events/', {
             headers : {
                 Authorization: `Token ${token}`,
             },
         });
-        console.log("Fetching events from URL:",api.defaults.baseURL + '/events/');
         return response.data;
     }
     catch(error) {

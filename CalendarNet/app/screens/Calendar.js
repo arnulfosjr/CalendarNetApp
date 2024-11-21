@@ -52,7 +52,6 @@ const CalendarUI = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             const getEventsFetched = await getEvents();
-            console.log('fetched events:', getEventsFetched);
             setEvent(getEventsFetched || []);
         };
         fetchEvents();
@@ -69,36 +68,6 @@ const CalendarUI = () => {
             setCurrentDate(forward => addMonths(forward,1));
         }
 
-    };
-
-    const parseDateFormat = (dateStr) => {
-        // format: "YYYY-MM-DD HH:mm:ss-08"
-        // checks format of string
-        if(!dateStr){
-            console.error("Invalid date string", dateStr);
-            return null;
-        }
-        // handles the 'YYYY-MM-DD' format
-        if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)){
-            return new Date(`${dateStr}T00:00:00Z`)
-        }
-
-        const parts = dateStr.split(' ');
-        if(parts.length !==3){
-            console.error("Date String Format Incorrect.",dateStr);
-            return null;        
-        }
-        const datePart = parts[0]; // YYYY-MM-DD
-        const timePart = parts[1]; // HH:mm:ss
-        const timeZonePart = parts[2]; // -08 which is UTC-08
-
-        const ISODate = `${datePart}T${timePart}:00${timeZonePart}:00`;
-        // creating a date object in the user's local timezone.
-        const date = new Date(ISODate);
-        // adjusting the time zone offset
-        const localOffset = new Date().getTimezoneOffset()*60000;
-        date.setMilliseconds(date.getMilliseconds() - localOffset);
-        return date;
     };
 
     const userOnePress = (day) => {
