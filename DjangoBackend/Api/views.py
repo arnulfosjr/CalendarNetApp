@@ -89,10 +89,7 @@ class UserDelete(APIView):
 class EventCreate(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
-        user = request.user
-        event_data = request.data.copy()
-        event_data['user'] = user.id
-        serializers = EventSerializer(data=event_data)
+        serializers = EventSerializer(data=request.data, context={'request':request})
         if serializers.is_valid():
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED)

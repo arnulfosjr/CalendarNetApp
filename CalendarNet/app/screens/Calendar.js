@@ -90,10 +90,15 @@ const CalendarUI = () => {
         }
         const datePart = parts[0]; // YYYY-MM-DD
         const timePart = parts[1]; // HH:mm:ss
-        const timeZonePart = parts[2]; // -08
+        const timeZonePart = parts[2]; // -08 which is UTC-08
 
         const ISODate = `${datePart}T${timePart}:00${timeZonePart}:00`;
-        return new Date(ISODate);
+        // creating a date object in the user's local timezone.
+        const date = new Date(ISODate);
+        // adjusting the time zone offset
+        const localOffset = new Date().getTimezoneOffset()*60000;
+        date.setMilliseconds(date.getMilliseconds() - localOffset);
+        return date;
     };
 
     const userOnePress = (day) => {
@@ -102,7 +107,10 @@ const CalendarUI = () => {
         const selectedDateFormatted = format(day,'yyyy-MM-dd');
 
         const filteredEvents = events.filter(event => {
-            return event.date === selectedDateFormatted;
+            if(event && event.startDate) {
+                return format(new Date (event.startDate),'yyyy-MM-dd') === selectedDateFormatted;
+            }
+            return false;
         });
         setDayOfEvent(filteredEvents);
         setIsVisible(true);

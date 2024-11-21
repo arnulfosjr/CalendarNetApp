@@ -2,8 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/version1',
-    timeout: 10000,
+    baseURL: 'http://localhost:8000/api/version1',
+    timeout: 20000,
     headers: { 'Content-Type': 'application/json'},
 });
 
@@ -91,10 +91,14 @@ export const createEvents = async (eventData) => {
             console.error('No Token found');
             return;
         }
+        console.log('Token: ', token);
+        const startDateUTC = new Date(eventData.startDate).toISOString();
+        const endDateUTC = new Date(eventData.endDate).toISOString();
+
         const formatDateData = {
             ...eventData,
-            startDate: eventData.startDate.toISOString(),
-            endDate: eventData.endDate.toISOString(),
+            startDate: startDateUTC,
+            endDate: endDateUTC,
         };
         const response = await api.post('/event/',formatDateData, {
             headers: {
@@ -105,11 +109,14 @@ export const createEvents = async (eventData) => {
     }
     catch(error) {
         if(error.response){
-            console.error('Error creating event:', error.response.data);
+            console.error('Error response create event:', error.response.data);
             console.error('Error status:', error.response.status);
+        } else if (error.request){
+            console.log('No Response:',error.request);
         } else {
-            console.log('Error:',error)
+            console.error('Error message: ', error.message);
         }
+        console.error('Complete error object:',error)
     }
 };
 
@@ -130,11 +137,13 @@ export const getEvents = async (eventId) => {
             console.error('Token not found for getEvents.');
             return;
         }
+        console.log("Token being used for fetching events: ", token);
         const response = await api.get('/events/', {
             headers : {
                 Authorization: `Token ${token}`,
             },
         });
+        console.log("Fetching events from URL:",api.defaults.baseURL + '/events/');
         return response.data;
     }
     catch(error) {

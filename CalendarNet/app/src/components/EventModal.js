@@ -5,6 +5,7 @@ import popUpStyle from '../styles/popUpStyle';
 import CalendarButton from './CalendarButton';
 import { format } from 'date-fns';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import moment from 'moment-timezone';
 
 const colorOptions = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#34495E', '#2ECC71', '#3498DB'];
 
@@ -53,6 +54,21 @@ const EventModal = ({
             setEventEndDate(defaultEndDate); 
         }
     }
+
+    const handleSaveEvent = () => {
+        const startDateUTC = moment(eventStartDate).utc().toISOString();
+        const endDateUTC = moment(eventEndDate).utc().toISOString();
+
+        const eventDate = {
+            title: eventTitle,
+            startDate: startDateUTC,
+            endDate: endDateUTC,
+            color: eventColor,
+            descr: eventDescr,
+        };
+        AddEvent(eventDate);
+    };
+
 
     return (
         <Modal animationType="fade" transparent={true} visible={isVisible}>
@@ -133,20 +149,20 @@ const EventModal = ({
                                 onChangeText={setEventDescr}
                                 style={popUpStyle.text}
                             />
-                            <CalendarButton title="Save" onPress={AddEvent} />
+                            <CalendarButton title="Save" onPress={handleSaveEvent} />
                         </>
                     ) : (
-                            <FlatList
-                                data={dayOfEvent}
-                                renderItem={({item}) => (
-                                    <View style={popUpStyle.Content}>
-                                        <Text>{item.title}</Text>
-                                        <Text>{format(new Date(item.startDate), 'p')} - {format(new Date(item.endDate), 'p')}</Text>
-                                    </View>
-                                )}
-                                keyExtractor={(item,index) => (item.id ? item.toString() : `event-${index}`)}
-                                ListEmptyComponent={<Text> No Events on this day.</Text>}
-                                />
+                        <FlatList
+                            data={dayOfEvent}
+                            renderItem={({item}) => (
+                                <View style={popUpStyle.Content}>
+                                    <Text>{item.title}</Text>
+                                    <Text>{format(new Date(item.startDate), 'p')} - {format(new Date(item.endDate), 'p')}</Text>
+                                </View>
+                            )}
+                            keyExtractor={(item,index) => (item.id ? item.toString() : `event-${index}`)}
+                            ListEmptyComponent={<Text> No Events on this day.</Text>}
+                            />
                     )}
                 </View>
             </View>

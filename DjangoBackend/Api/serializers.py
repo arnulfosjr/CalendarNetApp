@@ -3,6 +3,9 @@ from .models import *
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from django.db import transaction
+from datetime import datetime
+import pytz
+
 import logging
 logger = logging.getLogger('console')
 
@@ -37,19 +40,37 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError(f"Error creating user: {str(e)}")
 
 class EventSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
+
     class Meta:
         model = Event
         fields = ['user','title','startDate','endDate','color','descr','date']
 
-        def create(self, validated_data,request):
-            print("Received event data:",request.data)
-            # gives the authenticated user making the request, to associate the event with the user.
-            user = self.context['request'].user 
-            event = Event.objects.create(
-                user=user,
-                **validated_data
-            )
-            return event
+    def get_date(self, obj):
+        return obj.date
+
+    def create(self, validated_data):
+        # gives the authenticated user making the request, to associate the event with the user.
+        user = self.context['request'].user 
+        start_date = validated_data['startDate']
+        end_date = validated_data['endDate']
+
+        # convert user local time zone to UTC
+        if start_date.tzinfo is None:
+            raise serializers.ValidationError("startDate must be timezone aware");
+        
+        start_dateUTC = start_date.astimezone(pytz.UTC) # conversion to UTC.
+        end_dateUTC = end_date.astimezone(pytz.UTC) # conversion to UTC.
+
+        event = Event.objects.create(
+            user=user,
+            title=validated_data['title'],
+            descr=validated_data['descr'],
+            startDate=start_dateUTC,
+            endDate=end_dateUTC,
+            color=validated_data['color'],
+        )
+        return event
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,13 +90,13 @@ class ReminderSerializer(serializers.ModelSerializer):
         task_data = validated_data.get('task')
 
         if event_data:
-            event = Event.objects.get(id=event_data.id)
+            event = Event.objects.get(id=event_data['id'])
             if event.user != user:
                 raise ValidationError('Cannot make a reminder for an event that is not the user.')
             
         if task_data:
-            task = Task.objects.get(id=task_data.id)
-            if task.user != task:
+            task = Task.objects.get(id=task_data['id'])
+            if task.user != user:
                 raise ValidationError('Cannot make a task for an event that is not the user.')
         
         return super().create(validated_data)
