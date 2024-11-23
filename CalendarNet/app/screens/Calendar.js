@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
 import Task from './Task';
 import TextPrompt from './TextPrompt';
-import EventModal from '../src/components/EventModal';
+import CreateEventModal from '../src/components/CreateEventModal';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -185,7 +185,7 @@ const CalendarUI = () => {
                             ))}
                         </View>
                     ))}
-                    <EventModal
+                    <CreateEventModal
                         isVisible={isVisible}
                         setIsVisible={setIsVisible}
                         selectedDay={selectedDay}

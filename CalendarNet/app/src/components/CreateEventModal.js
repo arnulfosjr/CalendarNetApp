@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 
 const colorOptions = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#34495E', '#2ECC71', '#3498DB'];
 
-const EventModal = ({
+const CreateEventModal = ({
     isVisible,
     setIsVisible,
     selectedDay,
@@ -156,8 +156,9 @@ const EventModal = ({
                             data={dayOfEvent}
                             renderItem={({item}) => (
                                 <View style={popUpStyle.Content}>
-                                    <Text>{item.title}</Text>
-                                    <Text>{format(new Date(item.startDate), 'p')} - {format(new Date(item.endDate), 'p')}</Text>
+                                    <TouchableOpacity>
+                                        <Text style={[popUpStyle.text,{fontSize:12}]}>{item.title} {format(new Date(item.startDate), 'p')} - {format(new Date(item.endDate), 'p')}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             )}
                             keyExtractor={(item,index) => (item.id ? item.toString() : `event-${index}`)}
@@ -189,4 +190,4 @@ const styles = StyleSheet.create({
         borderWidth:3,
     }
 });
-export default EventModal;
+export default CreateEventModal;
