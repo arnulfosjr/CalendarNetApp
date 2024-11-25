@@ -1,4 +1,3 @@
-// src/components/EventModal.js
 import React, { useEffect } from 'react';
 import { View, Modal, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
 import popUpStyle from '../styles/popUpStyle';
@@ -71,7 +70,7 @@ const CreateEventModal = ({
 
 
     return (
-        <Modal animationType="fade" transparent={true} visible={isVisible}>
+        <Modal animationType='fade' transparent={true} visible={isVisible}>
             <View style={popUpStyle.Overlay}>
                 <View style={popUpStyle.Content}>
                 <CalendarButton title="Close" onPress={() => setIsVisible(false)}/>

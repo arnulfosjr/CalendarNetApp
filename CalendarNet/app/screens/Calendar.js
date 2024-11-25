@@ -16,6 +16,7 @@ import Settings from './Settings';
 import Task from './Task';
 import TextPrompt from './TextPrompt';
 import CreateEventModal from '../src/components/CreateEventModal';
+import EventInfoModal from '../src/components/EventInfoModal';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -28,7 +29,6 @@ const CalendarUI = () => {
     const [selectedDay, setSelectedDay] = useState(null);
     const [events, setEvent] = useState([]);
     const [dayOfEvent, setDayOfEvent] = useState([]);
-    const [isEditing, setIsEditing] = useState(false)
     const [isAddingEvent, setAddingEvent] = useState(false)
     const [isStartDateTimePicker, setStartDateTimePicker] = useState(false);
     const [isEndDateTimePicker, setEndDateTimePicker] = useState(false);
@@ -37,6 +37,9 @@ const CalendarUI = () => {
     const [eventEndDate, setEventEndDate] = useState(null);
     const [eventColor, setEventColor] = useState(null);
     const [eventDescr, setEventDescr] = useState('');
+    const [isEventInfoVisible,setIsEventInfoVisible] = useState(false);
+    const [selectedEventInfo,setSelectedEventInfo] = useState(null);
+    const [isEditing, setIsEditing] = useState(false)
     const [editEventID, setEditEventID] = useState(null);
 
     useEffect(() => {
@@ -91,6 +94,11 @@ const CalendarUI = () => {
         setIsVisible(true);
     };
 
+    const eventInfoPress = (event) => {
+        setSelectedEventInfo(event);
+        setIsEventInfoVisible(true);
+    };
+
     const AddEvent = async () => {
         const newEvent = {
             title: eventTitle,
@@ -133,7 +141,6 @@ const CalendarUI = () => {
         setEventDescr('');
     };
 
-
     const TabNavigator = () => {
         return (
             <Tab.Navigator 
@@ -173,16 +180,43 @@ const CalendarUI = () => {
                     </View>
                     {weeksInMonth.map((week, weekIndex) => (
                         <View key={weekIndex} style={calendarStyle.weekRow}>
-                            {week.map((day, dayIndex) => (
-                                <TouchableOpacity activeOpacity={1} key={dayIndex} style={calendarStyle.dayBox} onPress={() =>
-                                    userOnePress(day)} onLongPress={() => userLongPress(day)}>
-                                    <View >
-                                        <Text style={calendarStyle.dayBoxText}>
-                                            {format(day, 'd')}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
+                            {week.map((day, dayIndex) => {
+                                const dayOfEvent = events.filter(event => {
+                                    const eventDate = format(new Date(event.startDate), 'yyyy-MM-dd');
+                                    const currentDay = format(day, 'yyyy-MM-dd');
+                                    return eventDate === currentDay;
+                                });
+                                return (
+                                    <TouchableOpacity activeOpacity={0.5} key={dayIndex} style={calendarStyle.dayBox} onPress={() =>
+                                        userOnePress(day)} onLongPress={() => userLongPress(day)}>
+                                        <View>
+                                            <Text style={calendarStyle.dayBoxText}>
+                                                {format(day, 'd')}
+                                            </Text>
+                                            {dayOfEvent.map((events, eventIndex) => (
+                                                <TouchableOpacity 
+                                                    key={`${events.id}-${eventIndex}`}
+                                                    onPress={() => eventInfoPress(events)}
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            fontSize: 10,
+                                                            color: 'black',
+                                                            backgroundColor:events.color,
+                                                            borderColor:'grey',
+                                                            borderWidth:1
+                                                        }}
+                                                        numberOfLines={1}
+                                                        ellipsizeMode='tail'
+                                                    >
+                                                        {events.title}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </View>
                     ))}
                     <CreateEventModal
@@ -210,7 +244,11 @@ const CalendarUI = () => {
                     />
                 </View>
             </ScrollView>
-            
+            <EventInfoModal
+                isVisible={isEventInfoVisible}
+                onClose={() => setIsEventInfoVisible(false)}
+                events={selectedEventInfo}
+            />
         </SafeAreaView>
     );
 };
