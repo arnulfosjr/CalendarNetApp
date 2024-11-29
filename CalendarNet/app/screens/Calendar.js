@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet,View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
+import { StyleSheet,View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
@@ -204,7 +204,7 @@ const CalendarUI = () => {
                         ))}
                     </View>
                     {weeksInMonth.map((week, weekIndex) => (
-                        <View key={weekIndex} style={calendarStyle.weekRow}>
+                        <View key={`week-${weekIndex}`} style={calendarStyle.weekRow}>
                             {week.map((day, dayIndex) => {
                                 const dayOfEvent = events.filter(event => {
                                     const eventDate = format(new Date(event.startDate), 'yyyy-MM-dd');
@@ -212,7 +212,7 @@ const CalendarUI = () => {
                                     return eventDate === currentDay;
                                 });
                                 return (
-                                    <TouchableOpacity activeOpacity={0.5} key={dayIndex} style={calendarStyle.dayBox} onPress={() =>
+                                    <TouchableOpacity activeOpacity={0.5} key={`day-${weekIndex}-${dayIndex}`} style={calendarStyle.dayBox} onPress={() =>
                                         userOnePress(day)} onLongPress={() => userLongPress(day)}>
                                         <View>
                                             <Text style={calendarStyle.dayBoxText}>
@@ -220,7 +220,7 @@ const CalendarUI = () => {
                                             </Text>
                                             {dayOfEvent.map((event) => (
                                                 <TouchableOpacity 
-                                                    key={`event-${event.id || uuidv4()}`}
+                                                    key={`event-${event.id}`}
                                                     onPress={() => eventInfoPress(event)}
                                                 >   
                                                     <Text

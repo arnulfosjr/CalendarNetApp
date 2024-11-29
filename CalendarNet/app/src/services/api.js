@@ -91,7 +91,6 @@ export const createEvents = async (eventData) => {
             console.error('No Token found');
             return;
         }
-        console.log('Token: ', token);
         const startDateUTC = new Date(eventData.startDate).toISOString();
         const endDateUTC = new Date(eventData.endDate).toISOString();
 
