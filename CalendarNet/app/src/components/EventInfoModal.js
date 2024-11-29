@@ -85,6 +85,7 @@ const EventInfoModal = ({
             <DeleteEventModal
                 isVisible={isDeleteModalVisible}
                 onClose={() => setIsDeleteModalVisible(false)}
+                setIsEventInfoVisible={setIsEventInfoVisible}
                 DeleteEvent={DeleteEvent}
                 eventId={selectedEventInfo?.id}
             />

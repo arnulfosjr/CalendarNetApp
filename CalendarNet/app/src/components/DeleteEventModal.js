@@ -7,10 +7,12 @@ const EventDeleteModal = ({
     onClose,
     DeleteEvent,
     eventId,
+    setIsEventInfoVisible,
 }) => {
     const handleDeletePress = () => {
         DeleteEvent(eventId);
         onClose();  
+        setIsEventInfoVisible(false);
     };
 
     return (

@@ -48,8 +48,6 @@ const calendarStyle = StyleSheet.create({
         width:'14%',
         height:100,
         borderColor:'black',
-        borderWidth:1,
-        borderRadius:5,
         backgroundColor:'#ffffff',
         justifyContent:'flex-start',
         marginTop:1,
