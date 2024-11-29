@@ -107,6 +107,7 @@ class EventEdit(APIView):
 
 class EventDelete(APIView):
     permission_classes = [IsAuthenticated]
+    
     def delete(self,request,pk):
         event = get_object_or_404(Event,pk=pk)
         event.delete()

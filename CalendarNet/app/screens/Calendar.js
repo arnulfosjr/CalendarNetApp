@@ -64,14 +64,13 @@ const CalendarUI = () => {
     }, []);
 
     useEffect(() => {
-        if (deleteEvent) {
-            console.log('Hook Deleting Event ID:',deleteEvent);
-            DeleteEvent(deleteEvent);
-            setDeleteEvent(false); // reset
+        if (deleteEventID) {
+            DeleteEvent(deleteEventID);
+            setDeleteEvent(null); // reset
             setIsEventInfoVisible(false); // modal closes
             setSelectedEventInfo(null); // clear selected event
         }
-    },[deleteEvent]);
+    },[deleteEventID]);
 
 
     const handleCalendarScroll = (event) => {
@@ -108,7 +107,7 @@ const CalendarUI = () => {
         setIsVisible(true);
     };
 
-    const eventInfoPress = (event,key) => {
+    const eventInfoPress = (event) => {
         setSelectedEventInfo(event);
         setEditEventID(event.id);
         setIsEditing(true);
@@ -126,6 +125,7 @@ const CalendarUI = () => {
         const eventCreation = await createEvents(newEvent);
         setEvent([...events, eventCreation]);
         setIsVisible(false);
+        closeEventModal();
     };
 
     const EditEvent = async () => {
@@ -144,14 +144,13 @@ const CalendarUI = () => {
             setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
             setIsEventInfoVisible(false);
             setIsEditing(false);
-        setIsVisible(false)
+            setIsVisible(false)
     };
 
     const DeleteEvent = async (eventId) => {
         try {
             await deleteEvents(eventId);
             setEvent(events.filter(event => event.id !== eventId));
-            console.log('Event deleted:',eventId);
         } catch (error) {
             console.log('Error deleting event:',error);
         }
@@ -227,9 +226,11 @@ const CalendarUI = () => {
                                                         style={{
                                                             fontSize: 10,
                                                             color: 'black',
-                                                            backgroundColor:event.color,
-                                                            borderColor:'grey',
-                                                            borderWidth:1
+                                                            backgroundColor: event.color,
+                                                            borderColor: 'grey',
+                                                            borderWidth: 1,
+                                                            marginVertical: 1,
+                                                            padding: 3,
                                                         }}
                                                         numberOfLines={1}
                                                         ellipsizeMode='tail'
@@ -310,9 +311,9 @@ const LogOutSideBar = (props) => {
         <DrawerContentScrollView {...props}>
             <DrawerItemList {...props} />
             <View styles={styles.logoutContainer}>
-                <TouchableOpacity styles={styles.logoutButton} onPress={handleLogout}>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                     <Ionicons name='log-out-outline' size={30} color='red' />
-                    <Text styles={styles.logoutButton}>Logout</Text>
+                    <Text styles={styles.logoutButton}> Logout</Text>
                 </TouchableOpacity>
             </View>
         </DrawerContentScrollView>

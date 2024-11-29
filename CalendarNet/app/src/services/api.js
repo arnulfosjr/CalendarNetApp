@@ -130,7 +130,7 @@ export const editEvents = async (eventId,eventData) => {
 
         const response = await api.put(`/event/edit/${eventId}/`, eventData, {
             headers: {
-                Authorization: `Token ${token}`, // Include token in headers
+                Authorization: `Token ${token}`, 
             },
         });
         console.log('Event ID:', eventId);
@@ -194,8 +194,7 @@ export const deleteEvents = async (eventId) => {
                 Authorization: `Token ${token}`,  // Attach token to the request header
             }
         };
-
-        const response = await axios.delete(`/event/delete/${eventId}/`,config);
+        const response = await axios.delete(`http://localhost:8000/api/version1/event/delete/${eventId}/`, config);
         return response.data;
     }
     catch(error) {
