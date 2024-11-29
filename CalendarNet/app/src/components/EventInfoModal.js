@@ -1,32 +1,93 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { View, Modal, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CalendarButton from './CalendarButton';
 import popUpStyle from '../styles/popUpStyle';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
+import EditEventModal from './EditEventModal';
+import DeleteEventModal from './DeleteEventModal';
 
-const EventInfoModal = ({ isVisible, onClose, events }) => {
+const EventInfoModal = ({
+    isVisible, 
+    onClose, 
+    selectedEventInfo,
+    setEditEventID,
+    editEventID,
+    setEventTitle,
+    setEventStartDate,
+    setEventEndDate,
+    setEventColor,
+    setEventDescr,
+    EditEvent,
+    DeleteEvent,
+    setIsEventInfoVisible,
+    setIsVisible,
+    setStartDateTimePicker,
+    setEndDateTimePicker,
+    isStartDateTimePicker,
+    isEndDateTimePicker,
+}) => {
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+
+    const handleEditPress = () => {
+        setEditEventID(selectedEventInfo.id);
+        setEventTitle(selectedEventInfo.title || '');
+        setEventStartDate(new Date(selectedEventInfo.startDate));
+        setEventEndDate(new Date(selectedEventInfo.endDate));
+        setEventColor(selectedEventInfo.color || '#000000');
+        setEventDescr(selectedEventInfo.descr || '');
+        setIsEditModalVisible(true);
+    };
+
+    const handleDeletePress = () => {
+        setIsDeleteModalVisible(true);
+    };
+
     return (
         <Modal visible={isVisible} transparent={true} animationType='fade'>
             <View style={popUpStyle.Overlay}>
                 <View style={popUpStyle.Content}>
                     <CalendarButton title='Close' onPress={onClose}/>
                     <View style={styles.topContainer}>
-                        <Ionicons name='square' size={30} color={events?.color}/>
-                        <Text style={popUpStyle.Header}> {events?.title}</Text>
+                        <Ionicons name='square' size={30} color={selectedEventInfo?.color}/>
+                        <Text style={popUpStyle.Header}> {selectedEventInfo?.title}</Text>
                     </View>
-                    <Text style={popUpStyle.text}>{events?.startDate} - {events?.endDate}</Text>
-                    <Text style={popUpStyle.text}>{events?.descr || 'No description available'}</Text>
+                    <Text style={popUpStyle.text}>{selectedEventInfo?.startDate} - {selectedEventInfo?.endDate}</Text>
+                    <Text style={popUpStyle.text}>{selectedEventInfo?.descr || 'No description available'}</Text>
                     <View style={styles.container}>
-                        <TouchableOpacity style={styles.editButton}>
+                        <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
                             <Text style={styles.editButtonText}>Edit</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={handleDeletePress}>
                             <Ionicons name='trash' size={30} color='red'/>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
+            <EditEventModal
+                isVisible={isEditModalVisible}
+                onClose={() => setIsEditModalVisible(false)}
+                selectedEventInfo={selectedEventInfo}
+                setEventTitle={setEventTitle}
+                setEventStartDate={setEventStartDate}
+                setEventEndDate={setEventEndDate}
+                setEventColor={setEventColor}
+                setEventDescr={setEventDescr}
+                EditEvent={EditEvent}
+                setIsEventInfoVisible={setIsEventInfoVisible}
+                setIsVisible={setIsVisible}
+                setStartDateTimePicker={setStartDateTimePicker}
+                setEndDateTimePicker={setEndDateTimePicker}
+                isStartDateTimePicker={isStartDateTimePicker}
+                isEndDateTimePicker={isEndDateTimePicker}
+            />
+            <DeleteEventModal
+                isVisible={isDeleteModalVisible}
+                onClose={() => setIsDeleteModalVisible(false)}
+                DeleteEvent={DeleteEvent}
+                eventId={selectedEventInfo?.id}
+            />
         </Modal>
     );
 };

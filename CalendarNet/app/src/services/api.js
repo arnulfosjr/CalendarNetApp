@@ -122,11 +122,29 @@ export const createEvents = async (eventData) => {
 
 export const editEvents = async (eventId,eventData) => {
     try {
-        const response = await api.put(`/event/edit/${eventId}/`,eventData);
+        const token = await AsyncStorage.getItem('authToken');
+
+        if(!token){
+            console.error('Token not found for editEvents.');
+            return;
+        }
+
+        const response = await api.put(`/event/edit/${eventId}/`, eventData, {
+            headers: {
+                Authorization: `Token ${token}`, // Include token in headers
+            },
+        });
+        console.log('Event ID:', eventId);
+        console.log('Event Data:', eventData);
         return response.data;
     }
     catch(error) {
         console.error('Error editing event:', error);
+        if (error.response) {
+            console.error('Error response data:', error.response.data);
+            console.error('Error status:', error.response.status);
+        }
+        throw error;
     }
 };
 
@@ -137,11 +155,25 @@ export const getEvents = async (eventId) => {
             console.error('Token not found for getEvents.');
             return;
         }
-        const response = await api.get('/events/', {
+
+        let url = '/events/';
+        if (eventId) {
+            url = `/event/${eventId}/`;  // get specific event by ID
+        }
+
+        const response = await api.get(url, {
             headers : {
                 Authorization: `Token ${token}`,
             },
         });
+
+        if (response.data && Array.isArray(response.data)) {
+            response.data.forEach(event => {
+                if (!event.id) {
+                    console.error('Event missing ID:', event);
+                }
+            });
+        }
         return response.data;
     }
     catch(error) {
@@ -156,7 +188,15 @@ export const getEvents = async (eventId) => {
 
 export const deleteEvents = async (eventId) => {
     try {
-        const response = await api.delete(`/event/delete/${eventId}/`);
+        const token = await AsyncStorage.getItem('authToken');
+
+        const config = {
+            headers: {
+                Authorization: `Token ${token}`,  // Attach token to the request header
+            }
+        };
+
+        const response = await axios.delete(`/event/delete/${eventId}/`,config);
         return response.data;
     }
     catch(error) {

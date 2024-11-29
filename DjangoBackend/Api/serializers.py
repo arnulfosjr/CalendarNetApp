@@ -44,7 +44,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['user','title','startDate','endDate','color','descr','date']
+        fields = ['id','user','title','startDate','endDate','color','descr','date']
 
     def get_date(self, obj):
         return obj.date
@@ -70,6 +70,9 @@ class EventSerializer(serializers.ModelSerializer):
             endDate=end_dateUTC,
             color=validated_data['color'],
         )
+
+        if not event.id:
+            raise serializers.ValidationError("Failed to create event: Event ID not set.")
         return event
 
 class TaskSerializer(serializers.ModelSerializer):

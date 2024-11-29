@@ -8,7 +8,7 @@ import { createTasks, editTasks, getTask, deleteTask } from '../src/services/api
 import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator,DrawerContentScrollView,DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,7 @@ import Task from './Task';
 import TextPrompt from './TextPrompt';
 import CreateEventModal from '../src/components/CreateEventModal';
 import EventInfoModal from '../src/components/EventInfoModal';
+
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -41,6 +42,8 @@ const CalendarUI = () => {
     const [selectedEventInfo,setSelectedEventInfo] = useState(null);
     const [isEditing, setIsEditing] = useState(false)
     const [editEventID, setEditEventID] = useState(null);
+    const [deleteEvent,setDeleteEvent] = useState(false);
+    const [deleteEventID, setDeleteEventID] = useState(null);
 
     useEffect(() => {
         const start = startOfMonth(currentDate);
@@ -59,6 +62,17 @@ const CalendarUI = () => {
         };
         fetchEvents();
     }, []);
+
+    useEffect(() => {
+        if (deleteEvent) {
+            console.log('Hook Deleting Event ID:',deleteEvent);
+            DeleteEvent(deleteEvent);
+            setDeleteEvent(false); // reset
+            setIsEventInfoVisible(false); // modal closes
+            setSelectedEventInfo(null); // clear selected event
+        }
+    },[deleteEvent]);
+
 
     const handleCalendarScroll = (event) => {
         const scroll = event.nativeEvent.contentOffset.y;
@@ -94,8 +108,10 @@ const CalendarUI = () => {
         setIsVisible(true);
     };
 
-    const eventInfoPress = (event) => {
+    const eventInfoPress = (event,key) => {
         setSelectedEventInfo(event);
+        setEditEventID(event.id);
+        setIsEditing(true);
         setIsEventInfoVisible(true);
     };
 
@@ -110,10 +126,13 @@ const CalendarUI = () => {
         const eventCreation = await createEvents(newEvent);
         setEvent([...events, eventCreation]);
         setIsVisible(false);
-        closeEventModal();
     };
 
     const EditEvent = async () => {
+        if (!editEventID) {
+            console.error("Event ID is missing.");
+            return;
+        }
         const updateEvent = {
             title: eventTitle,
             startDate: eventStartDate,
@@ -121,17 +140,23 @@ const CalendarUI = () => {
             color: eventColor,
             descr: eventDescr,
         };
-        await editEvents(editEventID, updateEvent)
-        setEvent(events.map(events.id === editEventID ? updateEvent : events));
-        setIsEditing(false);
+            await editEvents(editEventID, updateEvent)
+            setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
+            setIsEventInfoVisible(false);
+            setIsEditing(false);
         setIsVisible(false)
     };
 
     const DeleteEvent = async (eventId) => {
-        await deleteEvents(eventId);
-        setEvent(events.filter(events => events.id !== eventId));
-    }
+        try {
+            await deleteEvents(eventId);
+            setEvent(events.filter(event => event.id !== eventId));
+            console.log('Event deleted:',eventId);
+        } catch (error) {
+            console.log('Error deleting event:',error);
+        }
 
+    }
     const closeEventModal = () => {
         setIsVisible(false);
         setEventTitle('');
@@ -193,23 +218,23 @@ const CalendarUI = () => {
                                             <Text style={calendarStyle.dayBoxText}>
                                                 {format(day, 'd')}
                                             </Text>
-                                            {dayOfEvent.map((events, eventIndex) => (
+                                            {dayOfEvent.map((event) => (
                                                 <TouchableOpacity 
-                                                    key={`${events.id}-${eventIndex}`}
-                                                    onPress={() => eventInfoPress(events)}
-                                                >
+                                                    key={`event-${event.id || uuidv4()}`}
+                                                    onPress={() => eventInfoPress(event)}
+                                                >   
                                                     <Text
                                                         style={{
                                                             fontSize: 10,
                                                             color: 'black',
-                                                            backgroundColor:events.color,
+                                                            backgroundColor:event.color,
                                                             borderColor:'grey',
                                                             borderWidth:1
                                                         }}
                                                         numberOfLines={1}
                                                         ellipsizeMode='tail'
                                                     >
-                                                        {events.title}
+                                                        {event.title}
                                                     </Text>
                                                 </TouchableOpacity>
                                             ))}
@@ -241,14 +266,31 @@ const CalendarUI = () => {
                         setEndDateTimePicker={setEndDateTimePicker}
                         isStartDateTimePicker={isStartDateTimePicker}
                         isEndDateTimePicker={isEndDateTimePicker}
+                        selectedEvent={selectedEventInfo}
+                    />
+                    <EventInfoModal
+                        isVisible={isEventInfoVisible}
+                        onClose={() => setIsEventInfoVisible(false)}
+                        selectedEventInfo={selectedEventInfo} //
+                        setSelectedDay={setSelectedDay}
+                        setEditEventID={() => {}}
+                        editEventID={editEventID}
+                        setEventTitle={() => {}}
+                        setEventStartDate={() => {}}
+                        setEventEndDate={() => {}}
+                        setEventColor={() => {}}
+                        setEventDescr={() => {}}
+                        EditEvent={EditEvent}
+                        DeleteEvent={DeleteEvent}
+                        setIsEventInfoVisible={setIsEventInfoVisible}
+                        setIsVisible={() => {}}
+                        setStartDateTimePicker={setStartDateTimePicker}
+                        setEndDateTimePicker={setEndDateTimePicker}
+                        isStartDateTimePicker={isStartDateTimePicker}
+                        isEndDateTimePicker={isEndDateTimePicker}
                     />
                 </View>
             </ScrollView>
-            <EventInfoModal
-                isVisible={isEventInfoVisible}
-                onClose={() => setIsEventInfoVisible(false)}
-                events={selectedEventInfo}
-            />
         </SafeAreaView>
     );
 };

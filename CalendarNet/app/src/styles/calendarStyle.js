@@ -5,11 +5,11 @@ const calendarStyle = StyleSheet.create({
         flex:1,
         justifyContent:'flex-start',
         alignItems: 'center',
-        backgroundColor: '#2E2E2F',
+        backgroundColor:'#2960AC'
     },
     scrollView:{
         flex:1,
-        backgroundColor:'#2E2E2F',
+        backgroundColor:'#2960AC',
     },
     header:{
         width:'100%',
@@ -32,6 +32,7 @@ const calendarStyle = StyleSheet.create({
         width:'100%',
         paddingHorizontal:10,
         marginBottom:5,
+        fontWeight:'bold',
     },
     text:{
         fontSize: 20,

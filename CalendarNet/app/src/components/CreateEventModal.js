@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Modal, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, Modal, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import popUpStyle from '../styles/popUpStyle';
 import CalendarButton from './CalendarButton';
 import { format } from 'date-fns';
@@ -54,6 +54,15 @@ const CreateEventModal = ({
         }
     }
 
+    const resetFields = () => {
+        setIsVisible(false);
+        setEventTitle('');
+        setEventStartDate(null);
+        setEventEndDate(null);
+        setEventColor(null);
+        setEventDescr('');
+    };
+
     const handleSaveEvent = () => {
         const startDateUTC = moment(eventStartDate).utc().toISOString();
         const endDateUTC = moment(eventEndDate).utc().toISOString();
@@ -66,6 +75,7 @@ const CreateEventModal = ({
             descr: eventDescr,
         };
         AddEvent(eventDate);
+        resetFields();
     };
 
 

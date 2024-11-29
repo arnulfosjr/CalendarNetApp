@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     text:{
         fontSize: 20,
         color: 'black',
-        fontFamily:'Georgia',
+        fontFamily:'Arial',
     },
     header:{
         height: 40,
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     headerText:{
         color:'black',
         fontSize:30,
-        fontFamily:'Georgia',
+        fontFamily:'Arial',
         height:80,
     },
     textBox:{

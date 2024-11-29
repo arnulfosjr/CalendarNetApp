@@ -4,8 +4,10 @@ import styles from '../src/styles/styles';
 
 const HelloWorld = () => {
     return(
-        <View style={styles.header}>
-            <Text>Hello World!</Text>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Settings</Text>
+            </View>
         </View>
     );
 };
