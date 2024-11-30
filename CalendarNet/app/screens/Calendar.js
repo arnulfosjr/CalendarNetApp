@@ -1,5 +1,5 @@
-import React, { useState, useEffect} from 'react';
-import { StyleSheet,View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList} from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
@@ -9,7 +9,7 @@ import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator,DrawerContentScrollView,DrawerItemList } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Settings from './Settings';
@@ -23,9 +23,9 @@ const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const CalendarUI = () => {
-    const [currentDate,setCurrentDate] = useState(new Date());
-    const [weeksInMonth,setWeeksInMonth] = useState([]);
-    
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [weeksInMonth, setWeeksInMonth] = useState([]);
+
     const [isVisible, setIsVisible] = useState(false);
     const [selectedDay, setSelectedDay] = useState(null);
     const [events, setEvent] = useState([]);
@@ -38,22 +38,22 @@ const CalendarUI = () => {
     const [eventEndDate, setEventEndDate] = useState(null);
     const [eventColor, setEventColor] = useState(null);
     const [eventDescr, setEventDescr] = useState('');
-    const [isEventInfoVisible,setIsEventInfoVisible] = useState(false);
-    const [selectedEventInfo,setSelectedEventInfo] = useState(null);
+    const [isEventInfoVisible, setIsEventInfoVisible] = useState(false);
+    const [selectedEventInfo, setSelectedEventInfo] = useState(null);
     const [isEditing, setIsEditing] = useState(false)
     const [editEventID, setEditEventID] = useState(null);
-    const [deleteEvent,setDeleteEvent] = useState(false);
+    const [deleteEvent, setDeleteEvent] = useState(false);
     const [deleteEventID, setDeleteEventID] = useState(null);
 
     useEffect(() => {
         const start = startOfMonth(currentDate);
         const end = endOfMonth(currentDate);
-        const weeks = eachWeekOfInterval({start,end},{weekStartsOn: 0}).map(startOfWeek => {
-            const endOfCurrentWeek = endOfWeek(startOfWeek, { weekStartsOn: 0});
-            return eachDayOfInterval({ start: startOfWeek, end: endOfCurrentWeek});
+        const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 0 }).map(startOfWeek => {
+            const endOfCurrentWeek = endOfWeek(startOfWeek, { weekStartsOn: 0 });
+            return eachDayOfInterval({ start: startOfWeek, end: endOfCurrentWeek });
         });
         setWeeksInMonth(weeks);
-    },[currentDate]);
+    }, [currentDate]);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -83,34 +83,35 @@ const CalendarUI = () => {
             setIsEventInfoVisible(false); // modal closes
             setSelectedEventInfo(null); // clear selected event
         }
-    },[deleteEventID]);
+    }, [deleteEventID]);
 
-    const handleCalendarScroll = (event) => {
+    const handleCalendarScroll = useCallback((event) => {
         const scroll = event.nativeEvent.contentOffset.y;
-
-        if(scroll < 0){
-            setCurrentDate(backward => subMonths(backward,1));
-            
+        if (scroll < 0) {
+            setCurrentDate(backward => subMonths(backward, 1));
         }
-        else if(scroll > 0){
-            setCurrentDate(forward => addMonths(forward,1));
+        else if (scroll > 0) {
+            setCurrentDate(forward => addMonths(forward, 1));
         }
+    }, []);
 
-    };
-
-    const userOnePress = (day) => {
+    const userOnePress = async (day) => {
         setSelectedDay(day);
         setAddingEvent(false);
-        const selectedDateFormatted = format(day,'yyyy-MM-dd');
+        const selectedDateFormatted = format(day, 'yyyy-MM-dd');
+        const filteredEvents = await fetchEventsForDay(selectedDateFormatted);
+        setDayOfEvent(filteredEvents);
+        setIsVisible(true);
+    };
 
-        const filteredEvents = events.filter(event => {
-            if(event && event.startDate) {
-                return format(new Date (event.startDate),'yyyy-MM-dd') === selectedDateFormatted;
+    const fetchEventsForDay = async (selectedDateFormatted) => {
+        return events.filter(event => {
+            if (event && event.startDate) {
+                return format(new Date(event.startDate), 'yyyy-MM-dd') === selectedDateFormatted;
             }
             return false;
         });
-        setDayOfEvent(filteredEvents);
-        setIsVisible(true);
+
     };
 
     const userLongPress = (day) => {
@@ -152,12 +153,12 @@ const CalendarUI = () => {
             color: eventColor,
             descr: eventDescr,
         };
-        console.log('Calendar.js EditEvent Log:',updateEvent);
-            await editEvents(editEventID, updateEvent)
-            setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
-            setIsEventInfoVisible(false);
-            setIsEditing(false);
-            setIsVisible(false)
+        console.log('Calendar.js EditEvent Log:', updateEvent);
+        await editEvents(editEventID, updateEvent)
+        setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
+        setIsEventInfoVisible(false);
+        setIsEditing(false);
+        setIsVisible(false)
     };
 
     const DeleteEvent = async (eventId) => {
@@ -165,10 +166,10 @@ const CalendarUI = () => {
             await deleteEvents(eventId);
             setEvent(events.filter(event => event.id !== eventId));
         } catch (error) {
-            console.log('Error deleting event:',error);
+            console.log('Error deleting event:', error);
         }
-
     }
+
     const closeEventModal = () => {
         setIsVisible(false);
         setEventTitle('');
@@ -180,10 +181,10 @@ const CalendarUI = () => {
 
     const TabNavigator = () => {
         return (
-            <Tab.Navigator 
-            screenOptions={{ 
-                animation: 'fade', 
-                headerShown:false,
+            <Tab.Navigator
+                screenOptions={{
+                    animation: 'fade',
+                    headerShown: false,
                 }}
             >
                 <Tab.Screen name="Tasks" component={Task} options={{
@@ -208,7 +209,7 @@ const CalendarUI = () => {
             >
                 <View style={calendarStyle.container}>
                     <View style={calendarStyle.header}>
-                        <Text style={calendarStyle.headerText}>{format(currentDate,'MMMM yyyy')}</Text>
+                        <Text style={calendarStyle.headerText}>{format(currentDate, 'MMMM yyyy')}</Text>
                     </View>
                     <View style={calendarStyle.dayNamesDisplay}>
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu ', 'Fri ', 'Sat '].map(day => (
@@ -231,10 +232,10 @@ const CalendarUI = () => {
                                                 {format(day, 'd')}
                                             </Text>
                                             {dayOfEvent.map((event) => (
-                                                <TouchableOpacity 
+                                                <TouchableOpacity
                                                     key={`event-${event.id}`}
                                                     onPress={() => eventInfoPress(event)}
-                                                >   
+                                                >
                                                     <Text
                                                         style={{
                                                             fontSize: 10,
@@ -287,17 +288,17 @@ const CalendarUI = () => {
                         onClose={() => setIsEventInfoVisible(false)}
                         selectedEventInfo={selectedEventInfo} //
                         setSelectedDay={setSelectedDay}
-                        setEditEventID={() => {}}
+                        setEditEventID={() => { }}
                         editEventID={editEventID}
-                        setEventTitle={() => {}}
-                        setEventStartDate={() => {}}
-                        setEventEndDate={() => {}}
-                        setEventColor={() => {}}
-                        setEventDescr={() => {}}
+                        setEventTitle={() => { }}
+                        setEventStartDate={() => { }}
+                        setEventEndDate={() => { }}
+                        setEventColor={() => { }}
+                        setEventDescr={() => { }}
                         EditEvent={EditEvent}
                         DeleteEvent={DeleteEvent}
                         setIsEventInfoVisible={setIsEventInfoVisible}
-                        setIsVisible={() => {}}
+                        setIsVisible={() => { }}
                         setStartDateTimePicker={setStartDateTimePicker}
                         setEndDateTimePicker={setEndDateTimePicker}
                         isStartDateTimePicker={isStartDateTimePicker}
@@ -336,18 +337,18 @@ const LogOutSideBar = (props) => {
 const AppNavigator = () => {
     return (
         <NavigationContainer initialRouteName="Calendar">
-            <Drawer.Navigator 
+            <Drawer.Navigator
                 drawerContent={(props) => <LogOutSideBar {...props} />}
                 screenOptions={{
-                    drawerActiveTintColor:'white',
+                    drawerActiveTintColor: 'white',
                     drawerActiveBackgroundColor: 'blue',
-                    drawerType:'slide',
+                    drawerType: 'slide',
                 }}>
                 <Drawer.Screen
                     name="Calendar"
                     component={CalendarUI}
                     options={{
-                        drawerIcon: ({ color, size}) => (
+                        drawerIcon: ({ color, size }) => (
                             <Ionicons name="calendar" size={size} color={color} />
                         )
                     }}
@@ -356,7 +357,7 @@ const AppNavigator = () => {
                     name="Tasks"
                     component={Task}
                     options={{
-                        drawerIcon: ({ color, size}) => (
+                        drawerIcon: ({ color, size }) => (
                             <Ionicons name="checkbox" size={size} color={color} />
                         )
                     }}
@@ -365,7 +366,7 @@ const AppNavigator = () => {
                     name="Text Prompt"
                     component={TextPrompt}
                     options={{
-                        drawerIcon: ({ color, size}) => (
+                        drawerIcon: ({ color, size }) => (
                             <Ionicons name="create-outline" size={size} color={color} />
                         )
                     }}
@@ -374,7 +375,7 @@ const AppNavigator = () => {
                     name="Settings"
                     component={Settings}
                     options={{
-                        drawerIcon: ({ color, size}) => (
+                        drawerIcon: ({ color, size }) => (
                             <Ionicons name="settings-sharp" size={size} color={color} />
                         )
                     }}
