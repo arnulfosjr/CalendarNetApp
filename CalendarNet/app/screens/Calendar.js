@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { StyleSheet,View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import CalendarButton from '../src/components/CalendarButton';
@@ -64,6 +64,19 @@ const CalendarUI = () => {
     }, []);
 
     useEffect(() => {
+        if (editEventID) {
+            const eventToEdit = events.find((event) => event.id === editEventID);
+            if (eventToEdit) {
+                setEventTitle(eventToEdit.title);
+                setEventStartDate(eventToEdit.startDate);
+                setEventEndDate(eventToEdit.endDate);
+                setEventColor(eventToEdit.color);
+                setEventDescr(eventToEdit.descr);
+            }
+        }
+    }, [editEventID, events]);
+
+    useEffect(() => {
         if (deleteEventID) {
             DeleteEvent(deleteEventID);
             setDeleteEvent(null); // reset
@@ -71,7 +84,6 @@ const CalendarUI = () => {
             setSelectedEventInfo(null); // clear selected event
         }
     },[deleteEventID]);
-
 
     const handleCalendarScroll = (event) => {
         const scroll = event.nativeEvent.contentOffset.y;
@@ -140,6 +152,7 @@ const CalendarUI = () => {
             color: eventColor,
             descr: eventDescr,
         };
+        console.log('Calendar.js EditEvent Log:',updateEvent);
             await editEvents(editEventID, updateEvent)
             setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
             setIsEventInfoVisible(false);

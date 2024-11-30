@@ -32,15 +32,25 @@ const EditEventModal = ({
     setStartDateTimePicker,
     setEndDateTimePicker,
 }) => { 
-    const [editedEvent, setEditedEvent] = useState({});
+    const [editedEvent, setEditedEvent] = useState({
+        id: null,
+        title: '',
+        startDate: null,
+        endDate: null,
+        color: '',
+        descr: '',
+    });
 
     useEffect(() => {
         if (selectedEventInfo) {
             setEditedEvent({
                 ...selectedEventInfo,
-                title: selectedEventInfo.title,
-                color: selectedEventInfo.color,
-                descr: selectedEventInfo.descr,
+                id: selectedEventInfo.id,
+                title: selectedEventInfo.title || '',
+                startDate: selectedEventInfo.startDate || null,
+                endDate: selectedEventInfo.endDate || null,
+                color: selectedEventInfo.color || colorOptions[0],
+                descr: selectedEventInfo.descr || '',
             });
         }
     }, [selectedEventInfo]);
@@ -91,27 +101,33 @@ const EditEventModal = ({
     };
 
     const handleSaveEvent = () => {
-        const startDateUTC = moment(eventStartDate).utc().toISOString();
-        const endDateUTC = moment(eventEndDate).utc().toISOString();
+        console.log("Edited Event before API call:", editedEvent)
         const eventData = {
-            id: selectedEventInfo?.id,
-            title: eventTitle,
-            startDate: startDateUTC,
-            endDate: endDateUTC,
-            color: eventColor,
-            descr: eventDescr,
+            ...editedEvent,
+            title: editedEvent.title || 'Untitled Event', 
+            descr: editedEvent.descr || 'No description',  
+            color: editedEvent.color || colorOptions[0],  
+            startDate: editedEvent.startDate ? moment(editedEvent.startDate).utc().toISOString() : null,
+            endDate: editedEvent.endDate ? moment(editedEvent.endDate).utc().toISOString() : null,
         };
-        console.log('Event Data to Save:', eventData); // Debug the payload
 
+        // Validation: Ensure all fields are populated
         if (!eventData.title || !eventData.color || !eventData.descr || !eventData.startDate || !eventData.endDate) {
             console.error('Validation Error: Missing fields:', eventData);
             return;
         }
-    
-        EditEvent(eventData);
-        onClose();
-        setIsEventInfoVisible(false);
-        resetFields();
+        console.log("Event Data to Save IN EditEventModal:", eventData);
+        EditEvent(eventData)
+            .then(() => {
+                onClose();
+                setIsEventInfoVisible(false);
+                setIsVisible(false);
+                resetFields();
+            })
+            .catch((error) => {
+                console.error('Error editing event:', error);
+                console.error('Error response data:', error.response?.data);
+            });
     };
 
     return (

@@ -7,6 +7,11 @@ const api = axios.create({
     headers: { 'Content-Type': 'application/json'},
 });
 
+export const formatToUTC = (date) => {
+    if (!date) return null; // Handle cases where date might be null/undefined
+    return new Date(date).toISOString(); // Convert to UTC format
+};
+
 export const createUsers = async (userData) => {
     try {
         const response = await api.post('/users/',userData);
@@ -122,26 +127,32 @@ export const createEvents = async (eventData) => {
 export const editEvents = async (eventId,eventData) => {
     try {
         const token = await AsyncStorage.getItem('authToken');
-
-        if(!token){
-            console.error('Token not found for editEvents.');
+        if (!token) {
+            console.error('No token found');
             return;
         }
 
-        const response = await api.put(`/event/edit/${eventId}/`, eventData, {
+        const formattedEvent = {
+            ...eventData,
+            startDate: formatToUTC(eventData.startDate),
+            endDate: formatToUTC(eventData.endDate),
+        };
+
+        console.log('Event Data to Save IN api:', formattedEvent);
+        const response = await api.put(`/event/edit/${eventId}/`, formattedEvent, {
             headers: {
-                Authorization: `Token ${token}`, 
-            },
+                Authorization: `Token ${token}`,
+            }
         });
-        console.log('Event ID:', eventId);
-        console.log('Event Data:', eventData);
+        console.log('Event Edited Successfully:', response.data);
         return response.data;
-    }
-    catch(error) {
-        console.error('Error editing event:', error);
+    } catch (error) {
         if (error.response) {
-            console.error('Error response data:', error.response.data);
-            console.error('Error status:', error.response.status);
+            console.error('API Response Error:', error.response.data);
+        } else if (error.request) {
+            console.error('No API Response:', error.request);
+        } else {
+            console.error('Request Error:', error.message);
         }
         throw error;
     }

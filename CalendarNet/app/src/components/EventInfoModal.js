@@ -12,7 +12,6 @@ const EventInfoModal = ({
     onClose, 
     selectedEventInfo,
     setEditEventID,
-    editEventID,
     setEventTitle,
     setEventStartDate,
     setEventEndDate,
