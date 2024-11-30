@@ -37,7 +37,10 @@ const EditEventModal = ({
     useEffect(() => {
         if (selectedEventInfo) {
             setEditedEvent({
-                ...selectedEventInfo
+                ...selectedEventInfo,
+                title: selectedEventInfo.title,
+                color: selectedEventInfo.color,
+                descr: selectedEventInfo.descr,
             });
         }
     }, [selectedEventInfo]);
@@ -64,6 +67,7 @@ const EditEventModal = ({
     };
 
     const handleColorChange = (value) => {
+        setEventColor(value);
         setEditedEvent((prevEvent) => ({
             ...prevEvent,
             color: value,
@@ -90,13 +94,20 @@ const EditEventModal = ({
         const startDateUTC = moment(eventStartDate).utc().toISOString();
         const endDateUTC = moment(eventEndDate).utc().toISOString();
         const eventData = {
-            id: selectedEventInfo.id,
+            id: selectedEventInfo?.id,
             title: eventTitle,
             startDate: startDateUTC,
             endDate: endDateUTC,
             color: eventColor,
             descr: eventDescr,
         };
+        console.log('Event Data to Save:', eventData); // Debug the payload
+
+        if (!eventData.title || !eventData.color || !eventData.descr || !eventData.startDate || !eventData.endDate) {
+            console.error('Validation Error: Missing fields:', eventData);
+            return;
+        }
+    
         EditEvent(eventData);
         onClose();
         setIsEventInfoVisible(false);
@@ -160,7 +171,7 @@ const EditEventModal = ({
                         onCancel={() => setEndDateTimePicker(false)}
                     />
                     <Text style={popUpStyle.textTitle}>Choose Event Color:</Text>
-                    <View style={styles.container}>
+                    <View style={styles.colorContainer}>
                         {colorOptions.map((color) => (
                             <TouchableOpacity
                                 key={color}
@@ -169,7 +180,7 @@ const EditEventModal = ({
                                     { backgroundColor: color },
                                     editedEvent.color === color && styles.selectedBox,
                                 ]}
-                                onPress={() => setEventColor(color)}
+                                onPress={() => handleColorChange(color)}
                             />
                         ))}
                     </View>
@@ -213,6 +224,24 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         fontFamily:'Arial',
     },
+
+    colorContainer: {
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+        marginVertical:10,
+        justifyContent:'space-around'
+    },
+    colorBox: {
+        width: 50,
+        height: 40,
+        borderColor: '#000',
+        borderRadius: 10,
+        borderWidth: 1,
+        margin:1
+    },
+    selectedBox: {
+        borderWidth:3,
+    }
 });
 
 export default EditEventModal;
