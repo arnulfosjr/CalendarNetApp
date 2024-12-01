@@ -137,7 +137,7 @@ export const editEvents = async (eventId,eventData) => {
 
         console.log('Event Data to Save IN api:', formatDateData);
         const response = await api.put(`/event/edit/${eventId}/`, formatDateData, { headers });
-        console.log('Event Edited Successfully:', response.data);
+        console.log('Event Edited Successfully IN api:', response.data);
         return response.data;
 
     } catch (error) {

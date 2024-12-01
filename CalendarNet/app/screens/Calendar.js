@@ -131,11 +131,13 @@ const CalendarUI = () => {
         setEditEventID(event.id);
         setIsEditing(true);
         setIsEventInfoVisible(true);
-        setEventTitle(event.title);  // Populate form with event data
-        setEventStartDate(new Date(event.startDate));  // Set the start date
-        setEventEndDate(new Date(event.endDate));  // Set the end date
-        setEventColor(event.color);  // Set event color
-        setEventDescr(event.descr);  // Set event description
+
+        // Populate form with event data
+        setEventTitle(event.title);  
+        setEventStartDate(new Date(event.startDate));  
+        setEventEndDate(new Date(event.endDate)); 
+        setEventColor(event.color);  
+        setEventDescr(event.descr);  
     };
 
     const AddEvent = async () => {
@@ -151,25 +153,25 @@ const CalendarUI = () => {
         setIsVisible(false);
     };
 
-    const EditEvent = async () => {
+    const EditEvent = async (eventData) => {
         if (!editEventID) {
             console.error("Event ID is missing.");
             return;
         }
-        const updateEvent = {
-            title: eventTitle,
-            startDate: eventStartDate,
-            endDate: eventEndDate,
-            color: eventColor,
-            descr: eventDescr,
-        };
-        console.log('Calendar.js EditEvent Log:', updateEvent);
-        await editEvents(editEventID, updateEvent)
-        setEvent(events.map(event => event.id === editEventID ? { ...event, ...updateEvent } : event));
-        setIsEventInfoVisible(false);
-        setIsEditing(false);
-        setIsVisible(false)
-        clearForm();
+        
+        console.log('Calendar.js EditEvent Log:', eventData);
+        try {
+            const updatedEvent = await editEvents(editEventID, eventData)
+            setEvent(events.map(event => event.id === editEventID ? { ...event, ...updatedEvent } : event));
+            console.log("Calendar.js Event Edited Successfully :", updatedEvent);
+
+            setIsEventInfoVisible(false);
+            setIsEditing(false);
+            setIsVisible(false);
+            clearForm();
+        } catch (error){
+            console.log("Error editng event in EditEvent.");
+        }
     };
 
     const DeleteEvent = async (eventId) => {
@@ -238,13 +240,15 @@ const CalendarUI = () => {
                                 const isToday = format(day,'yyyy-MM-dd') === format(new Date(),'yyyy-MM-dd');
                                 return (
                                     <TouchableOpacity activeOpacity={0.5} key={`day-${weekIndex}-${dayIndex}`} style=
-                                    {[calendarStyle.dayBox,isToday && {backgroundColor:'red',borderRadius:1}]} 
+                                    {calendarStyle.dayBox} 
                                     onPress={() =>
                                         userOnePress(day)} onLongPress={() => userLongPress(day)}>
                                         <View>
-                                            <Text style={[calendarStyle.dayBoxText, isToday && {color:'white'}]}>
-                                                {format(day, 'd')}
-                                            </Text>
+                                            <View>
+                                                <Text style={[calendarStyle.dayBoxText,isToday && {backgroundColor:'#ff9999',borderRadius:1}]}>
+                                                    {format(day, 'd')}
+                                                </Text>
+                                            </View>
                                             {dayOfEvent.map((event) => (
                                                 <TouchableOpacity
                                                     key={`event-${event.id}`}
