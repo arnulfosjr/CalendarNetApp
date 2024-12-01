@@ -78,11 +78,11 @@ class EventSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['id','user','title','dueDate','color','descr','timeCreated','updateTimeCreated','isCompleted']
 
 class ReminderSerializer(serializers.ModelSerializer):
-    event = EventSerializer(read_only=False)
-    task = TaskSerializer(read_only=False)
+    event = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all(), required=False)
+    task = serializers.PrimaryKeyRelatedField(queryset=Task.objects.all(), required=False)
     class Meta:
         model = Reminder
         fields = '__all__'

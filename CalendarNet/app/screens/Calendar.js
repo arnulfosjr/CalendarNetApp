@@ -4,7 +4,7 @@ import calendarStyle from '../src/styles/calendarStyle';
 import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
 import { logOutUser, createEvents, editEvents, getEvents, deleteEvents } from '../src/services/api';
-import { createTasks, editTasks, getTask, deleteTask } from '../src/services/api';
+import { createTask, editTask, getTask, deleteTask } from '../src/services/api';
 import { createReminder, editReminder } from '../src/services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -34,8 +34,8 @@ const CalendarUI = () => {
     const [isStartDateTimePicker, setStartDateTimePicker] = useState(false);
     const [isEndDateTimePicker, setEndDateTimePicker] = useState(false);
     const [eventTitle, setEventTitle] = useState('');
-    const [eventStartDate, setEventStartDate] = useState(null);
-    const [eventEndDate, setEventEndDate] = useState(null);
+    const [eventStartDate, setEventStartDate] = useState(new Date());
+    const [eventEndDate, setEventEndDate] = useState(new Date());
     const [eventColor, setEventColor] = useState(null);
     const [eventDescr, setEventDescr] = useState('');
     const [isEventInfoVisible, setIsEventInfoVisible] = useState(false);
@@ -118,6 +118,12 @@ const CalendarUI = () => {
         setSelectedDay(day);
         setAddingEvent(true);
         setIsVisible(true);
+
+        setEventTitle('');
+        setEventStartDate(new Date());
+        setEventEndDate(new Date());
+        setEventColor(null);
+        setEventDescr('');
     };
 
     const eventInfoPress = (event) => {
@@ -125,6 +131,11 @@ const CalendarUI = () => {
         setEditEventID(event.id);
         setIsEditing(true);
         setIsEventInfoVisible(true);
+        setEventTitle(event.title);  // Populate form with event data
+        setEventStartDate(new Date(event.startDate));  // Set the start date
+        setEventEndDate(new Date(event.endDate));  // Set the end date
+        setEventColor(event.color);  // Set event color
+        setEventDescr(event.descr);  // Set event description
     };
 
     const AddEvent = async () => {
@@ -138,7 +149,6 @@ const CalendarUI = () => {
         const eventCreation = await createEvents(newEvent);
         setEvent([...events, eventCreation]);
         setIsVisible(false);
-        closeEventModal();
     };
 
     const EditEvent = async () => {
@@ -159,6 +169,7 @@ const CalendarUI = () => {
         setIsEventInfoVisible(false);
         setIsEditing(false);
         setIsVisible(false)
+        clearForm();
     };
 
     const DeleteEvent = async (eventId) => {
@@ -170,11 +181,11 @@ const CalendarUI = () => {
         }
     }
 
-    const closeEventModal = () => {
+    const clearForm = () => {
         setIsVisible(false);
         setEventTitle('');
-        setEventStartDate(null);
-        setEventEndDate(null);
+        setEventStartDate(new Date());
+        setEventEndDate(new Date());
         setEventColor(null);
         setEventDescr('');
     };

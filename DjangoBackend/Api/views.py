@@ -159,6 +159,10 @@ class TaskView(APIView):
         task = get_object_or_404(Task,pk=pk)
         serializers = TaskSerializer(task)
         return Response(serializers.data)
+    
+class TaskList(generics.ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
 
 class ReminderCreate(APIView):
     permission_classes = [IsAuthenticated]

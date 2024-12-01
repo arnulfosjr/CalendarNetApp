@@ -57,8 +57,8 @@ const CreateEventModal = ({
     const resetFields = () => {
         setIsVisible(false);
         setEventTitle('');
-        setEventStartDate(null);
-        setEventEndDate(null);
+        setEventStartDate(new Date());
+        setEventEndDate(new Date());
         setEventColor(null);
         setEventDescr('');
     };
@@ -158,7 +158,10 @@ const CreateEventModal = ({
                                 onChangeText={setEventDescr}
                                 style={popUpStyle.text}
                             />
-                            <CalendarButton title="Save" onPress={handleSaveEvent} />
+                            <CalendarButton title="Save" onPress={()=> {
+                                handleSaveEvent();
+                                setIsVisible(false);
+                            }} />
                         </>
                     ) : (
                         <FlatList

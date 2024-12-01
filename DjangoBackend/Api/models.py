@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-#from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from rest_framework.authtoken.models import Token as DefaultToken

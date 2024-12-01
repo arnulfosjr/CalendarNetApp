@@ -40,7 +40,7 @@ const EditEventModal = ({
         color: '',
         descr: '',
     });
-
+    
     useEffect(() => {
         if (selectedEventInfo) {
             setEditedEvent({

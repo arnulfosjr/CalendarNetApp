@@ -8,8 +8,26 @@ const api = axios.create({
 });
 
 export const formatToUTC = (date) => {
-    if (!date) return null; // Handle cases where date might be null/undefined
+    if (!date) return null; 
     return new Date(date).toISOString(); // Convert to UTC format
+};
+
+const handleApiError = (error) => {
+    if (error.response) {
+        console.error('API Error:', error.response.data);
+        console.error('Status Code:', error.response.status);
+    } else if (error.request) {
+        console.error('No Response Received:', error.request);
+    } else {
+        console.error('Error Message:', error.message);
+    }
+    throw error;
+};
+
+const getAuthHeaders = async () => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) throw new Error('No auth token found');
+    return { Authorization: `Token ${token}` };
 };
 
 export const createUsers = async (userData) => {
@@ -19,7 +37,7 @@ export const createUsers = async (userData) => {
         return response.data;
     }
     catch(error) {
-        console.error('Error creating user:', error);
+        handleApiError(error);
     }
 };
 
@@ -75,7 +93,7 @@ export const editUsers = async (userId,userData) => {
         return response.data;
     }
     catch(error) {
-        console.error('Error editing user:', error);
+        handleApiError(error);
     }
 };
 
@@ -85,17 +103,13 @@ export const deleteUsers = async (userId) => {
         return response.data;
     }
     catch(error) {
-        console.error('Error deleting user:', error);
+        handleApiError(error);
     }
 };
 
 export const createEvents = async (eventData) => {
     try {
-        const token = await AsyncStorage.getItem('authToken');
-        if(!token){
-            console.error('No Token found');
-            return;
-        }
+        const headers = await getAuthHeaders();
         const startDateUTC = new Date(eventData.startDate).toISOString();
         const endDateUTC = new Date(eventData.endDate).toISOString();
 
@@ -104,78 +118,42 @@ export const createEvents = async (eventData) => {
             startDate: startDateUTC,
             endDate: endDateUTC,
         };
-        const response = await api.post('/event/',formatDateData, {
-            headers: {
-                Authorization: `Token ${token}`,
-            },
-        });
+        const response = await api.post('/event/',formatDateData, { headers });
         return response.data;
     }
     catch(error) {
-        if(error.response){
-            console.error('Error response create event:', error.response.data);
-            console.error('Error status:', error.response.status);
-        } else if (error.request){
-            console.log('No Response:',error.request);
-        } else {
-            console.error('Error message: ', error.message);
-        }
-        console.error('Complete error object:',error)
+        handleApiError(error);
     }
 };
 
 export const editEvents = async (eventId,eventData) => {
     try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
-
-        const formattedEvent = {
+        const headers = await getAuthHeaders();
+        const formatDateData = {
             ...eventData,
             startDate: formatToUTC(eventData.startDate),
             endDate: formatToUTC(eventData.endDate),
         };
 
-        console.log('Event Data to Save IN api:', formattedEvent);
-        const response = await api.put(`/event/edit/${eventId}/`, formattedEvent, {
-            headers: {
-                Authorization: `Token ${token}`,
-            }
-        });
+        console.log('Event Data to Save IN api:', formatDateData);
+        const response = await api.put(`/event/edit/${eventId}/`, formatDateData, { headers });
         console.log('Event Edited Successfully:', response.data);
         return response.data;
+
     } catch (error) {
-        if (error.response) {
-            console.error('API Response Error:', error.response.data);
-        } else if (error.request) {
-            console.error('No API Response:', error.request);
-        } else {
-            console.error('Request Error:', error.message);
-        }
-        throw error;
+       handleApiError(error);
     }
 };
 
 export const getEvents = async (eventId) => {
     try {
-        const token = await AsyncStorage.getItem('authToken');
-        if(!token){
-            console.error('Token not found for getEvents.');
-            return;
-        }
-
+        const headers = await getAuthHeaders();
         let url = '/events/';
         if (eventId) {
             url = `/event/${eventId}/`;  // get specific event by ID
         }
 
-        const response = await api.get(url, {
-            headers : {
-                Authorization: `Token ${token}`,
-            },
-        });
+        const response = await api.get(url, { headers });
 
         if (response.data && Array.isArray(response.data)) {
             response.data.forEach(event => {
@@ -187,69 +165,88 @@ export const getEvents = async (eventId) => {
         return response.data;
     }
     catch(error) {
-        if(error.response){
-            console.error('Error creating event:', error.response.data);
-            console.error('Error status:', error.response.status);
-        } else {
-            console.log('Error:',error)
-        }
+       handleApiError(error);
     }
 };
 
 export const deleteEvents = async (eventId) => {
     try {
-        const token = await AsyncStorage.getItem('authToken');
-
-        const config = {
-            headers: {
-                Authorization: `Token ${token}`,  // Attach token to the request header
-            }
-        };
+        const headers = await getAuthHeaders();
+        const config = { headers };
         const response = await axios.delete(`http://localhost:8000/api/version1/event/delete/${eventId}/`, config);
         return response.data;
     }
     catch(error) {
-        console.error('Error deleting event:', error);
+        handleApiError(error);
     }
 };
 
-export const createTasks = async (taskData) => {
+export const createTask = async (taskData) => {
     try {
-        const response = await api.post('/task/',taskData);
+        const headers = await getAuthHeaders();
+        const formatDateData = {
+            ...taskData,
+            dueDate: formatToUTC(taskData.dueDate),
+        };
+
+        const response = await api.post('/task/', formatDateData, { headers });
         return response.data;
     }
     catch(error) {
-        console.error('Error creating task:', error);
+       handleApiError(error);
     }
 };
 
-export const editTasks = async (taskId,taskData) => {
+export const editTask = async (taskId,taskData) => {
     try {
-        const response = await api.put(`/task/edit/${taskId}/`,taskData);
+        const headers = await getAuthHeaders();
+        const formatDateData = {
+            ...taskData,
+            dueDate: formatToUTC(taskData.dueDate),
+        };
+
+        console.log('Task Data to Save IN api:', formatDateData);
+        const response = await api.put(`/task/edit/${taskId}/`,formatDateData, { headers});
+        console.log('Task Edited Successfully:', response.data);
         return response.data;
     }
     catch(error) {
-        console.error('Error editing task:', error);
+        handleApiError(error);
     }
 };
 
 export const getTask = async (taskId) => {
     try {
-        const response = await api.get(`/task/${taskId}/`);
-        return response.data;
+        const headers = await getAuthHeaders();
+        let url = '/tasks/';
+        if (taskId) {
+            url = `/task/${taskId}/`;  // get specific event by ID
+        }
+
+        const response = await api.get(url, { headers});
+        if (response.data && Array.isArray(response.data)) {
+            response.data.forEach(task => {
+                if (!task.id) {
+                    console.error('Task missing ID:', task);
+                }
+            });
+        }
+        return response.data
     }
     catch(error) {
-        console.error('Error getting task:', error);
+        handleApiError(error);
     }
 };
 
 export const deleteTask = async (taskId) => {
     try {
-        const response = await api.delete(`/task/delete/${taskId}/`);
+        const headers = await getAuthHeaders();
+        const config = { headers };
+        const response = await axios.delete(`http://localhost:8000/api/version1/task/delete/${taskId}/`, config);
         return response.data;
     }
     catch(error) {
-        console.error('Error deleting task:', error);
+        handleApiError(error);
     }
 };
 
@@ -259,7 +256,7 @@ export const createReminder = async (reminderData) => {
         return response.data;
     }
     catch(error) {
-        console.error('Error creating reminder:', error);
+        handleApiError(error);
     }
 };
 
@@ -269,7 +266,7 @@ export const editReminder = async (reminderId,reminderData) => {
         return response.data;
     }
     catch(error) {
-        console.error('Error editing reminder:', error);
+        handleApiError(error);
     }
 };
 

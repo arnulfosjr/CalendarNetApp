@@ -17,6 +17,7 @@ urlpatterns = [
     path('task/<int:pk>/',TaskView.as_view(),name='taskView'),
     path('task/edit/<int:pk>/',TaskEdit.as_view(),name='taskEdit'),
     path('task/delete/<int:pk>/',TaskDelete.as_view(),name='taskDelete'),
+    path('tasks/',TaskList.as_view(),name='taskList'),
     path('reminder/',ReminderCreate.as_view(),name='reminderCreate'),
     path('reminder/edit/<int:pk>/',ReminderEdit.as_view(),name='reminderEdit'),
 ]
