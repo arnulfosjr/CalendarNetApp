@@ -105,13 +105,13 @@ const CalendarUI = () => {
     };
 
     const fetchEventsForDay = async (selectedDateFormatted) => {
-        return events.filter(event => {
+        const filteredEvents = events.filter(event => {
             if (event && event.startDate) {
                 return format(new Date(event.startDate), 'yyyy-MM-dd') === selectedDateFormatted;
             }
             return false;
         });
-
+        return filteredEvents.sort((a,b) => new Date(a.startDate) - new Date(b.endDate));
     };
 
     const userLongPress = (day) => {

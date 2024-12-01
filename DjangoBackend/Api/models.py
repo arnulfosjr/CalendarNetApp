@@ -5,15 +5,15 @@ from django.conf import settings
 from rest_framework.authtoken.models import Token as DefaultToken
 
 COLOR_CHOICES = [
-    ('#FF5733', 'Red'),
-    ('#33FF57', 'Green'),
-    ('#3357FF', 'Blue'),
+    ('#FD7E14', 'Orange'),
+    ('#33FF57', 'Lime Green'),
+    ('#007BFF', 'Blue'),
     ('#F1C40F', 'Yellow'),
     ('#9B59B6', 'Purple'),
     ('#1ABC9C', 'Teal'),
-    ('#E74C3C', 'Coral'),
-    ('#34495E', 'Gray'),
-    ('#2ECC71', 'Lime'),
+    ('#E74C3C', 'Red Coral'),
+    ('#6C757D', 'Gray'),
+    ('#28A745', 'Green'),
     ('#3498DB', 'Sky Blue'),
 ]
 
