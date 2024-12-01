@@ -235,11 +235,14 @@ const CalendarUI = () => {
                                     const currentDay = format(day, 'yyyy-MM-dd');
                                     return eventDate === currentDay;
                                 });
+                                const isToday = format(day,'yyyy-MM-dd') === format(new Date(),'yyyy-MM-dd');
                                 return (
-                                    <TouchableOpacity activeOpacity={0.5} key={`day-${weekIndex}-${dayIndex}`} style={calendarStyle.dayBox} onPress={() =>
+                                    <TouchableOpacity activeOpacity={0.5} key={`day-${weekIndex}-${dayIndex}`} style=
+                                    {[calendarStyle.dayBox,isToday && {backgroundColor:'red',borderRadius:1}]} 
+                                    onPress={() =>
                                         userOnePress(day)} onLongPress={() => userLongPress(day)}>
                                         <View>
-                                            <Text style={calendarStyle.dayBoxText}>
+                                            <Text style={[calendarStyle.dayBoxText, isToday && {color:'white'}]}>
                                                 {format(day, 'd')}
                                             </Text>
                                             {dayOfEvent.map((event) => (

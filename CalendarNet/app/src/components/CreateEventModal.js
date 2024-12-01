@@ -6,8 +6,7 @@ import { format } from 'date-fns';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment-timezone';
 
-const colorOptions = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#34495E', '#2ECC71', '#3498DB'];
-
+const colorOptions = ['#FD7E14', '#33FF57', '#007BFF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#6C757D', '#28A745', '#3498DB'];
 const CreateEventModal = ({
     isVisible,
     setIsVisible,
@@ -101,7 +100,7 @@ const CreateEventModal = ({
                             <TouchableOpacity onPress={() => setStartDateTimePicker(true)}>
                                 <TextInput
                                     placeholder='Start Date'
-                                    value={eventStartDate ? format(new Date(eventStartDate), 'yyyy-MM-dd hh:mm:ss a') : ''}
+                                    value={eventStartDate ? format(new Date(eventStartDate), 'yyyy-MM-dd h:mm a') : ''}
                                     onChangeText={setEventStartDate}
                                     editable={false}
                                     style={popUpStyle.text}
@@ -121,7 +120,7 @@ const CreateEventModal = ({
                             <TouchableOpacity onPress={() => setEndDateTimePicker(true)}>
                                 <TextInput
                                     placeholder='End Date'
-                                    value={eventEndDate ? format(new Date(eventEndDate), 'yyyy-MM-dd hh:mm:ss a') : ''}
+                                    value={eventEndDate ? format(new Date(eventEndDate), 'yyyy-MM-dd h:mm a') : ''}
                                     onChangeText={setEventEndDate}
                                     editable={false}
                                     style={popUpStyle.text}

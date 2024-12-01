@@ -43,6 +43,9 @@ const EventInfoModal = ({
         setIsDeleteModalVisible(true);
     };
 
+    const formatStartDate = selectedEventInfo?.startDate ? format(new Date(selectedEventInfo.startDate),'yyyy-MM-dd h:mm a') : '';
+    const formatEndDate = selectedEventInfo?.endDate ? format(new Date(selectedEventInfo.endDate),'yyyy-MM-dd h:mm a') : '';
+
     return (
         <Modal visible={isVisible} transparent={true} animationType='fade'>
             <View style={popUpStyle.Overlay}>
@@ -52,7 +55,8 @@ const EventInfoModal = ({
                         <Ionicons name='square' size={30} color={selectedEventInfo?.color}/>
                         <Text style={popUpStyle.Header}> {selectedEventInfo?.title}</Text>
                     </View>
-                    <Text style={popUpStyle.text}>{selectedEventInfo?.startDate} - {selectedEventInfo?.endDate}</Text>
+                    <Text style={popUpStyle.text}>{formatStartDate}</Text>
+                    <Text style={popUpStyle.text}>{formatEndDate}</Text>
                     <Text style={popUpStyle.text}>{selectedEventInfo?.descr || 'No description available'}</Text>
                     <View style={styles.container}>
                         <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
