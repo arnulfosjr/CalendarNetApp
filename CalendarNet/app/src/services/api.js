@@ -110,13 +110,11 @@ export const deleteUsers = async (userId) => {
 export const createEvents = async (eventData) => {
     try {
         const headers = await getAuthHeaders();
-        const startDateUTC = new Date(eventData.startDate).toISOString();
-        const endDateUTC = new Date(eventData.endDate).toISOString();
-
         const formatDateData = {
             ...eventData,
-            startDate: startDateUTC,
-            endDate: endDateUTC,
+            startDate: formatToUTC(eventData.startDate),
+            endDate: formatToUTC(eventData.endDate),
+            endOfRepeat: formatToUTC(eventData.endOfRepeat),
         };
         const response = await api.post('/event/',formatDateData, { headers });
         return response.data;
@@ -133,6 +131,7 @@ export const editEvents = async (eventId,eventData) => {
             ...eventData,
             startDate: formatToUTC(eventData.startDate),
             endDate: formatToUTC(eventData.endDate),
+            endOfRepeat: formatToUTC(eventData.endOfRepeat),
         };
 
         console.log('Event Data to Save IN api:', formatDateData);

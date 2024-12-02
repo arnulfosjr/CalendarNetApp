@@ -44,7 +44,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['id','user','title','startDate','endDate','color','descr','date']
+        fields = ['id','user','title','startDate','endDate','color','descr','date','repeat','endOfRepeat']
 
     def get_date(self, obj):
         return obj.date
@@ -54,13 +54,15 @@ class EventSerializer(serializers.ModelSerializer):
         user = self.context['request'].user 
         start_date = validated_data['startDate']
         end_date = validated_data['endDate']
+        end_Of_Repeat = validated_data.get('endOfRepeat')
 
         # convert user local time zone to UTC
-        if start_date.tzinfo is None:
-            raise serializers.ValidationError("startDate must be timezone aware");
+        if start_date.tzinfo is None or end_date.tzinfo is None:
+            raise serializers.ValidationError("startDate and endDate must be timezone aware")
         
         start_dateUTC = start_date.astimezone(pytz.UTC) # conversion to UTC.
         end_dateUTC = end_date.astimezone(pytz.UTC) # conversion to UTC.
+        end_Of_RepeatUTC = end_Of_Repeat.astimezone(pytz.UTC) if end_Of_Repeat and end_Of_Repeat.tzinfo else None # conversion to UTC.
 
         event = Event.objects.create(
             user=user,
@@ -69,6 +71,8 @@ class EventSerializer(serializers.ModelSerializer):
             startDate=start_dateUTC,
             endDate=end_dateUTC,
             color=validated_data['color'],
+            repeat=validated_data['repeat'],
+            endOfRepeat=end_Of_RepeatUTC,
         )
 
         if not event.id:

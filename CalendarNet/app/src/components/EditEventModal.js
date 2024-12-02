@@ -8,6 +8,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment-timezone';
 
 const colorOptions = ['#FD7E14', '#33FF57', '#007BFF', '#F1C40F', '#9B59B6', '#1ABC9C', '#E74C3C', '#6C757D', '#28A745', '#3498DB'];
+const repeatOptions = ['Never','Daily','Weekly','Monthly','Yearly'];
 
 const EditEventModal = ({
     isVisible,
@@ -24,21 +25,27 @@ const EditEventModal = ({
     eventColor,
     setEventDescr,
     eventDescr,
+    setEventRepeat,
+    setEventEndRepeat,
     EditEvent,
     setIsEventInfoVisible,
     setIsVisible,
     isStartDateTimePicker,
     isEndDateTimePicker,
+    isEndRepeatTimePicker,
     setStartDateTimePicker,
     setEndDateTimePicker,
+    setEndRepeatTimePicker,
 }) => { 
     const [editedEvent, setEditedEvent] = useState({
         id: null,
         title: '',
         startDate: null,
         endDate: null,
-        color: '',
+        color: '#6C757D',
         descr: '',
+        repeat: 'Never',
+        endOfRepeat: null,
     });
     
     useEffect(() => {
@@ -47,10 +54,12 @@ const EditEventModal = ({
                 ...selectedEventInfo,
                 id: selectedEventInfo.id,
                 title: selectedEventInfo.title || '',
-                startDate: selectedEventInfo.startDate || null,
-                endDate: selectedEventInfo.endDate || null,
-                color: selectedEventInfo.color || colorOptions[0],
+                startDate: selectedEventInfo.startDate || new Date(),
+                endDate: selectedEventInfo.endDate || new Date(),
+                color: selectedEventInfo.color || '#6C757D',
                 descr: selectedEventInfo.descr || '',
+                repeat: selectedEventInfo.repeat || 'Never',
+                endOfRepeat: selectedEventInfo.endOfRepeat || null,
             });
         }
     }, [selectedEventInfo]);
@@ -91,13 +100,30 @@ const EditEventModal = ({
         }));
     };
 
+    const handleRepeat = (value) => {
+        setEventRepeat(value);
+        setEditedEvent((prevEvent) => ({
+            ...prevEvent,
+            repeat: value,
+        }));
+    };
+
+    const handleEndOfRepeat = (value) => {
+        setEditedEvent((prevEvent) => ({
+            ...prevEvent,
+            endOfRepeat: value,
+        }));
+    };
+
     const resetFields = () => {
         setIsVisible(false);
         setEventTitle('');
-        setEventStartDate(null);
-        setEventEndDate(null);
-        setEventColor(null);
+        setEventStartDate(new Date());
+        setEventEndDate(new Date());
+        setEventColor('#6C757D');
         setEventDescr('');
+        setEventRepeat('Never');
+        setEventEndRepeat(null);
     };
 
     const handleSaveEvent = () => {
@@ -106,16 +132,23 @@ const EditEventModal = ({
             ...editedEvent,
             title: editedEvent.title || 'Untitled Event', 
             descr: editedEvent.descr || 'No description',  
-            color: editedEvent.color || colorOptions[0],  
+            color: editedEvent.color || '#6C757D',  
             startDate: editedEvent.startDate ? moment(editedEvent.startDate).utc().toISOString() : null,
             endDate: editedEvent.endDate ? moment(editedEvent.endDate).utc().toISOString() : null,
+            repeat: editedEvent.repeat || 'Never',
+            endOfRepeat: editedEvent.repeat !== 'Never' && editedEvent.endOfRepeat ? moment(editedEvent.endOfRepeat).utc().toISOString() : null,
         };
 
-        // Validation: Ensure all fields are populated
-        if (!eventData.title || !eventData.color || !eventData.descr || !eventData.startDate || !eventData.endDate) {
-            console.error('Validation Error: Missing fields:', eventData);
+        if (!eventData.title || !eventData.startDate || !eventData.endDate) {
+            console.error('Validation Error: Missing required fields:', eventData);
             return;
         }
+        
+        if (new Date(eventData.startDate) > new Date(eventData.endDate)) {
+            console.error('Validation Error: Start date cannot be after end date.');
+            return;
+        }
+        
         console.log("Event Data to Save IN EditEventModal:", eventData);
         EditEvent(eventData)
             .then(() => {
@@ -161,7 +194,7 @@ const EditEventModal = ({
                         mode="datetime"
                         date={editedEvent.startDate instanceof Date ? editedEvent.startDate : new Date()}
                         onConfirm={(date) => {
-                            setEventStartDate(date);
+                            setEventStartDate(new Date(date));
                             setStartDateTimePicker(false);
                         }}
                         onCancel={() => setStartDateTimePicker(false)}
@@ -181,7 +214,7 @@ const EditEventModal = ({
                         mode="datetime"
                         date={eventEndDate instanceof Date ? editedEvent.endDate : new Date()}
                         onConfirm={(date) => {
-                            setEventEndDate(date);
+                            setEventEndDate(new Date(date));
                             setEndDateTimePicker(false);
                         }}
                         onCancel={() => setEndDateTimePicker(false)}
@@ -207,6 +240,41 @@ const EditEventModal = ({
                         onChangeText={handleDescriptionChange}
                         style={popUpStyle.text}
                     />
+                    <Text style={popUpStyle.textTitle}>Choose Repeat Option:</Text>
+                            <View style={styles.container}>
+                                {repeatOptions.map((repeat) => (
+                                    <TouchableOpacity
+                                        key={repeat}
+                                        style={[
+                                            styles.repeatBox,
+                                            editedEvent.repeat === repeat && styles.selectedBox,
+                                        ]}
+                                        onPress={() => handleRepeat(repeat)}
+                                    >
+                                        <Text style={{ textAlign: 'center', fontWeight:'bold'}}>{repeat}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            <Text style={popUpStyle.textTitle}>Choose Repeat End Date:</Text>
+                            <TouchableOpacity onPress={() => setEndRepeatTimePicker(true)}>
+                                <TextInput
+                                    placeholder='Repeat End Date'
+                                    value={editedEvent.endOfRepeat ? format(new Date(editedEvent.endOfRepeat), 'yyyy-MM-dd') : ''}
+                                    onChangeText={handleEndOfRepeat}
+                                    editable={false}
+                                    style={popUpStyle.text}
+                                />
+                            </TouchableOpacity>
+                            <DateTimePickerModal
+                                isVisible={isEndRepeatTimePicker}
+                                mode="date"
+                                date={editedEvent.endOfRepeat instanceof Date ? editedEvent.endOfRepeat : new Date()}
+                                onConfirm={(date) => {
+                                    setEventEndRepeat(new Date(date));
+                                    setEndRepeatTimePicker(false);
+                                }}
+                                onCancel={() => setEndRepeatTimePicker(false)}
+                            />
                      <CalendarButton title="Save" onPress={handleSaveEvent} />
                 </View>
             </View>
@@ -216,10 +284,11 @@ const EditEventModal = ({
 
 const styles = StyleSheet.create({
     container: {
-        alignItems:'center',
-        marginTop:20,
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+        marginVertical:10,
         flexDirection:'row',
-        justifyContent:'space-between',
+        justifyContent:'space-around',
     },
     topContainer: {
         alignItems:'center',
@@ -248,12 +317,22 @@ const styles = StyleSheet.create({
         justifyContent:'space-around'
     },
     colorBox: {
-        width: 50,
-        height: 40,
+        width: 45,
+        height: 30,
         borderColor: '#000',
         borderRadius: 10,
         borderWidth: 1,
         margin:1
+    },
+    repeatBox: {
+        width: 60,
+        height: 25,
+        borderColor: '#000',
+        backgroundColor:'white',
+        borderRadius: 5,
+        borderWidth: 1,
+        margin:1,
+        marginBottom:5,
     },
     selectedBox: {
         borderWidth:3,

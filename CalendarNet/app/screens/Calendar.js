@@ -33,11 +33,14 @@ const CalendarUI = () => {
     const [isAddingEvent, setAddingEvent] = useState(false)
     const [isStartDateTimePicker, setStartDateTimePicker] = useState(false);
     const [isEndDateTimePicker, setEndDateTimePicker] = useState(false);
+    const [isEndRepeatTimePicker, setEndRepeatTimePicker] = useState(false);
     const [eventTitle, setEventTitle] = useState('');
     const [eventStartDate, setEventStartDate] = useState(new Date());
     const [eventEndDate, setEventEndDate] = useState(new Date());
-    const [eventColor, setEventColor] = useState(null);
+    const [eventColor, setEventColor] = useState('#6C757D');
     const [eventDescr, setEventDescr] = useState('');
+    const [eventRepeat, setEventRepeat] = useState('Never');
+    const [eventEndRepeat, setEventEndRepeat] = useState(new Date());
     const [isEventInfoVisible, setIsEventInfoVisible] = useState(false);
     const [selectedEventInfo, setSelectedEventInfo] = useState(null);
     const [isEditing, setIsEditing] = useState(false)
@@ -72,6 +75,8 @@ const CalendarUI = () => {
                 setEventEndDate(eventToEdit.endDate);
                 setEventColor(eventToEdit.color);
                 setEventDescr(eventToEdit.descr);
+                setEventRepeat(eventToEdit.repeat);
+                setEventEndRepeat(eventToEdit.endOfRepeat);
             }
         }
     }, [editEventID, events]);
@@ -122,8 +127,10 @@ const CalendarUI = () => {
         setEventTitle('');
         setEventStartDate(new Date());
         setEventEndDate(new Date());
-        setEventColor(null);
+        setEventColor('#6C757D');
         setEventDescr('');
+        setEventRepeat('Never');
+        setEventEndDate(null);
     };
 
     const eventInfoPress = (event) => {
@@ -138,6 +145,8 @@ const CalendarUI = () => {
         setEventEndDate(new Date(event.endDate)); 
         setEventColor(event.color);  
         setEventDescr(event.descr);  
+        setEventRepeat(event.repeat);
+        setEventEndRepeat(new Date(event.endOfRepeat));
     };
 
     const AddEvent = async () => {
@@ -147,6 +156,8 @@ const CalendarUI = () => {
             endDate: eventEndDate,
             color: eventColor,
             descr: eventDescr,
+            repeat: eventRepeat,
+            endOfRepeat: eventEndRepeat,
         };
         const eventCreation = await createEvents(newEvent);
         setEvent([...events, eventCreation]);
@@ -188,8 +199,10 @@ const CalendarUI = () => {
         setEventTitle('');
         setEventStartDate(new Date());
         setEventEndDate(new Date());
-        setEventColor(null);
+        setEventColor('#6C757D');
         setEventDescr('');
+        setEventRepeat('Never');
+        setEventEndDate(null);
     };
 
     const TabNavigator = () => {
@@ -294,17 +307,23 @@ const CalendarUI = () => {
                         eventColor={eventColor}
                         setEventDescr={setEventDescr}
                         eventDescr={eventDescr}
+                        eventRepeat={eventRepeat} //
+                        setEventRepeat={setEventRepeat} //
+                        eventEndRepeat={eventEndRepeat} //
+                        setEventEndRepeat={setEventEndRepeat} //
                         AddEvent={AddEvent}
                         setStartDateTimePicker={setStartDateTimePicker}
                         setEndDateTimePicker={setEndDateTimePicker}
+                        setEndRepeatTimePicker={setEndRepeatTimePicker}
                         isStartDateTimePicker={isStartDateTimePicker}
                         isEndDateTimePicker={isEndDateTimePicker}
+                        isEndRepeatTimePicker={isEndRepeatTimePicker}
                         selectedEvent={selectedEventInfo}
                     />
                     <EventInfoModal
                         isVisible={isEventInfoVisible}
                         onClose={() => setIsEventInfoVisible(false)}
-                        selectedEventInfo={selectedEventInfo} //
+                        selectedEventInfo={selectedEventInfo} 
                         setSelectedDay={setSelectedDay}
                         setEditEventID={() => { }}
                         editEventID={editEventID}
@@ -313,14 +332,18 @@ const CalendarUI = () => {
                         setEventEndDate={() => { }}
                         setEventColor={() => { }}
                         setEventDescr={() => { }}
+                        setEventRepeat={setEventRepeat} //
+                        setEventEndRepeat={setEventEndRepeat} //
                         EditEvent={EditEvent}
                         DeleteEvent={DeleteEvent}
                         setIsEventInfoVisible={setIsEventInfoVisible}
                         setIsVisible={() => { }}
                         setStartDateTimePicker={setStartDateTimePicker}
                         setEndDateTimePicker={setEndDateTimePicker}
+                        setEndRepeatTimePicker={setEndRepeatTimePicker}
                         isStartDateTimePicker={isStartDateTimePicker}
                         isEndDateTimePicker={isEndDateTimePicker}
+                        isEndRepeatTimePicker={isEndRepeatTimePicker}
                     />
                 </View>
             </ScrollView>

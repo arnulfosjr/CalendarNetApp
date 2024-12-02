@@ -17,14 +17,18 @@ const EventInfoModal = ({
     setEventEndDate,
     setEventColor,
     setEventDescr,
+    setEventRepeat,
+    setEventEndRepeat,
     EditEvent,
     DeleteEvent,
     setIsEventInfoVisible,
     setIsVisible,
     setStartDateTimePicker,
     setEndDateTimePicker,
+    setEndRepeatTimePicker,
     isStartDateTimePicker,
     isEndDateTimePicker,
+    isEndRepeatTimePicker,
 }) => {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -36,6 +40,8 @@ const EventInfoModal = ({
         setEventEndDate(new Date(selectedEventInfo.endDate));
         setEventColor(selectedEventInfo.color || '#000000');
         setEventDescr(selectedEventInfo.descr || '');
+        setEventRepeat(selectedEventInfo.repeat || 'Never');
+        setEventEndRepeat(new Date(selectedEventInfo.endOfRepeat));
         setIsEditModalVisible(true);
     };
 
@@ -43,8 +49,9 @@ const EventInfoModal = ({
         setIsDeleteModalVisible(true);
     };
 
-    const formatStartDate = selectedEventInfo?.startDate ? format(new Date(selectedEventInfo.startDate),'yyyy-MM-dd h:mm a') : '';
-    const formatEndDate = selectedEventInfo?.endDate ? format(new Date(selectedEventInfo.endDate),'yyyy-MM-dd h:mm a') : '';
+    const formatStartDate = selectedEventInfo?.startDate ? format(new Date(selectedEventInfo.startDate),'EEEE, MMMM d h:mm a') : 'No Start Date';
+    const formatEndDate = selectedEventInfo?.endDate ? format(new Date(selectedEventInfo.endDate),'EEEE, MMMM d h:mm a') : 'No End Date';
+    const formatEndRepeat = selectedEventInfo?.repeat === 'Never' || !selectedEventInfo?.endOfRepeat ? 'Never' : format(new Date(selectedEventInfo.endOfRepeat),'yyyy-MM-dd');
 
     return (
         <Modal visible={isVisible} transparent={true} animationType='fade'>
@@ -58,6 +65,9 @@ const EventInfoModal = ({
                     <Text style={popUpStyle.text}>{formatStartDate}</Text>
                     <Text style={popUpStyle.text}>{formatEndDate}</Text>
                     <Text style={popUpStyle.text}>{selectedEventInfo?.descr || 'No description available'}</Text>
+                    <Text style={popUpStyle.text}>
+                        <Ionicons name='repeat-outline' size={20} color='blue'/> Repeats: {selectedEventInfo?.repeat} {'\n'}Until: {formatEndRepeat}
+                    </Text>
                     <View style={styles.container}>
                         <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
                             <Text style={styles.editButtonText}>Edit</Text>
@@ -77,13 +87,17 @@ const EventInfoModal = ({
                 setEventEndDate={setEventEndDate}
                 setEventColor={setEventColor}
                 setEventDescr={setEventDescr}
+                setEventRepeat={setEventRepeat}
+                setEventEndRepeat={setEventEndRepeat}
                 EditEvent={EditEvent}
                 setIsEventInfoVisible={setIsEventInfoVisible}
                 setIsVisible={setIsVisible}
                 setStartDateTimePicker={setStartDateTimePicker}
                 setEndDateTimePicker={setEndDateTimePicker}
+                setEndRepeatTimePicker={setEndRepeatTimePicker}
                 isStartDateTimePicker={isStartDateTimePicker}
                 isEndDateTimePicker={isEndDateTimePicker}
+                isEndRepeatTimePicker={isEndRepeatTimePicker}
             />
             <DeleteEventModal
                 isVisible={isDeleteModalVisible}
