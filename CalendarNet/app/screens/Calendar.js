@@ -170,11 +170,9 @@ const CalendarUI = () => {
             return;
         }
         
-        console.log('Calendar.js EditEvent Log:', eventData);
         try {
             const updatedEvent = await editEvents(editEventID, eventData)
             setEvent(events.map(event => event.id === editEventID ? { ...event, ...updatedEvent } : event));
-            console.log("Calendar.js Event Edited Successfully :", updatedEvent);
 
             setIsEventInfoVisible(false);
             setIsEditing(false);
@@ -332,8 +330,8 @@ const CalendarUI = () => {
                         setEventEndDate={() => { }}
                         setEventColor={() => { }}
                         setEventDescr={() => { }}
-                        setEventRepeat={setEventRepeat} //
-                        setEventEndRepeat={setEventEndRepeat} //
+                        setEventRepeat={setEventRepeat} 
+                        setEventEndRepeat={setEventEndRepeat} 
                         EditEvent={EditEvent}
                         DeleteEvent={DeleteEvent}
                         setIsEventInfoVisible={setIsEventInfoVisible}

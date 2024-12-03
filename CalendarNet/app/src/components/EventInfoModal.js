@@ -54,7 +54,7 @@ const EventInfoModal = ({
     const formatEndRepeat = selectedEventInfo?.repeat === 'Never' || !selectedEventInfo?.endOfRepeat ? 'Never' : format(new Date(selectedEventInfo.endOfRepeat),'yyyy-MM-dd');
 
     return (
-        <Modal visible={isVisible} transparent={true} animationType='fade'>
+        <Modal visible={isVisible} transparent={true} animationType='slide'>
             <View style={popUpStyle.Overlay}>
                 <View style={popUpStyle.Content}>
                     <CalendarButton title='Close' onPress={onClose}/>

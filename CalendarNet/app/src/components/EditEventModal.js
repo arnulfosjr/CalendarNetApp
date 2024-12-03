@@ -15,16 +15,11 @@ const EditEventModal = ({
     onClose,
     selectedDay,
     selectedEventInfo,
-    eventTitle,
     setEventTitle,
     setEventStartDate,
-    eventStartDate,
     setEventEndDate,
-    eventEndDate,
     setEventColor,
-    eventColor,
     setEventDescr,
-    eventDescr,
     setEventRepeat,
     setEventEndRepeat,
     EditEvent,
@@ -127,7 +122,6 @@ const EditEventModal = ({
     };
 
     const handleSaveEvent = () => {
-        console.log("Edited Event before API call:", editedEvent)
         const eventData = {
             ...editedEvent,
             title: editedEvent.title || 'Untitled Event', 
@@ -148,8 +142,7 @@ const EditEventModal = ({
             console.error('Validation Error: Start date cannot be after end date.');
             return;
         }
-        
-        console.log("Event Data to Save IN EditEventModal:", eventData);
+
         EditEvent(eventData)
             .then(() => {
                 onClose();
@@ -164,7 +157,7 @@ const EditEventModal = ({
     };
 
     return (
-        <Modal animationType='fade' transparent={true} visible={isVisible}>
+        <Modal animationType='slide' transparent={true} visible={isVisible}>
             <View style={popUpStyle.Overlay}>
                 <View style={popUpStyle.Content}>
                     <CalendarButton title='Close' onPress={onClose}/>
@@ -192,7 +185,7 @@ const EditEventModal = ({
                     <DateTimePickerModal
                         isVisible={isStartDateTimePicker}
                         mode="datetime"
-                        date={editedEvent.startDate instanceof Date ? editedEvent.startDate : new Date()}
+                        date={editedEvent.startDate ? new Date (editedEvent.startDate) : new Date()}
                         onConfirm={(date) => {
                             setEventStartDate(new Date(date));
                             setStartDateTimePicker(false);
@@ -212,7 +205,7 @@ const EditEventModal = ({
                     <DateTimePickerModal
                         isVisible={isEndDateTimePicker}
                         mode="datetime"
-                        date={eventEndDate instanceof Date ? editedEvent.endDate : new Date()}
+                        date={editedEvent.endDate ? new Date (editedEvent.endDate) : new Date()}
                         onConfirm={(date) => {
                             setEventEndDate(new Date(date));
                             setEndDateTimePicker(false);
@@ -268,7 +261,7 @@ const EditEventModal = ({
                             <DateTimePickerModal
                                 isVisible={isEndRepeatTimePicker}
                                 mode="date"
-                                date={editedEvent.endOfRepeat instanceof Date ? editedEvent.endOfRepeat : new Date()}
+                                date={editedEvent.endOfRepeat ? new Date (editedEvent.endOfRepeat) : new Date()}
                                 onConfirm={(date) => {
                                     setEventEndRepeat(new Date(date));
                                     setEndRepeatTimePicker(false);

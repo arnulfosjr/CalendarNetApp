@@ -250,7 +250,6 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row', 
         flexWrap: 'wrap', 
-        marginVertical:10,
         justifyContent:'space-around'
     },
     colorBox: {
@@ -269,7 +268,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         margin:1,
-        marginBottom:5,
+        marginBottom:5
     },
     selectedBox: {
         borderWidth:3,
