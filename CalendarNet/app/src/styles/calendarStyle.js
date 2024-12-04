@@ -5,11 +5,11 @@ const calendarStyle = StyleSheet.create({
         flex:1,
         justifyContent:'flex-start',
         alignItems: 'center',
-        backgroundColor:'#2960AC'
+        backgroundColor:'#333737',
     },
     scrollView:{
         flex:1,
-        backgroundColor:'#2960AC',
+        backgroundColor:'#333737',
     },
     header:{
         width:'100%',
@@ -19,7 +19,7 @@ const calendarStyle = StyleSheet.create({
     },
     headerText:{
         color:'white',
-        fontSize:30,
+        fontSize:35,
         fontFamily:'Arial',
         height:35,
         fontWeight:'bold',
@@ -46,15 +46,14 @@ const calendarStyle = StyleSheet.create({
     },
     dayBox:{
         width:'14%',
-        height:100,
-        borderColor:'black',
-        backgroundColor:'#ffffff',
+        height:120,
+        backgroundColor:'#444445',
         justifyContent:'flex-start',
         marginTop:1,
     },
     dayBoxText:{
         fontSize:15,
-        color:'black',
+        color:'white',
         fontFamily:'Arial',  
     },
 });

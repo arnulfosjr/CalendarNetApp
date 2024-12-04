@@ -255,7 +255,11 @@ const CalendarUI = () => {
                                         userOnePress(day)} onLongPress={() => userLongPress(day)}>
                                         <View>
                                             <View>
-                                                <Text style={[calendarStyle.dayBoxText,isToday && {backgroundColor:'#ff9999',borderRadius:1}]}>
+                                                <Text style={[calendarStyle.dayBoxText,isToday && {   
+                                                        backgroundColor:'#ff9999',
+                                                        borderRadius:5,
+                                                        color:'black'
+                                                    }]}>
                                                     {format(day, 'd')}
                                                 </Text>
                                             </View>
