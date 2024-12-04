@@ -43,13 +43,10 @@ export const createUsers = async (userData) => {
 
 export const logInUser = async (userData) => {
     try {
-        console.log('Loggin in:', userData);
         const response = await api.post('/users/login/',userData);
-        console.log('Login Response: ',response.data);
 
         if(response.data && response.data.token){
             const token = response.data.token;
-            console.log('Token received:',token);
 
             //Store token in local storage.
             await AsyncStorage.setItem('authToken', token)
@@ -80,7 +77,6 @@ export const logOutUser = async () => {
         // Remove token from localStorage.
         await AsyncStorage.removeItem('authToken');
         delete api.defaults.headers.common['Authorization'];
-        console.log("User logged out successfully");
     } catch (error) {
         console.log("Error logging out:", error);
     }

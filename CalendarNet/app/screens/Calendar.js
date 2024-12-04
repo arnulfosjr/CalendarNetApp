@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
-import CalendarButton from '../src/components/CalendarButton';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
 import { logOutUser, createEvents, editEvents, getEvents, deleteEvents } from '../src/services/api';
 import { createTask, editTask, getTask, deleteTask } from '../src/services/api';
