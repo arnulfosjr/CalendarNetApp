@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, { useState } from 'react';
 import { View, Modal, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CalendarButton from './CalendarButton';
 import popUpStyle from '../styles/popUpStyle';
