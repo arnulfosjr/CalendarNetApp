@@ -5,7 +5,7 @@ import popUpStyle from '../styles/popUpStyle';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import EditTaskModal from './EditTaskModal';
-import DeleteTaskModal from './DeleteEventModal';
+import DeleteTaskModal from './DeleteTaskModal';
 
 const TaskInfoModal = ({
     isVisible,
@@ -31,7 +31,7 @@ const TaskInfoModal = ({
     const handleEditPress = () => {
         setEditTaskID(selectedTaskInfo.id);
         setTaskTitle(selectedTaskInfo.title || '');
-        setTaskDueDate(new Date(selectedEventInfo.startDate));
+        setTaskDueDate(new Date(selectedTaskInfo.dueDate));
         setTaskColor(selectedTaskInfo.color || '#000000');
         setTaskDescr(selectedTaskInfo.descr || '');
         setIsEditModalVisible(true);
@@ -57,15 +57,36 @@ const TaskInfoModal = ({
                     <Text style={popUpStyle.textTitle}>Description:</Text>
                     <Text style={popUpStyle.text}>{selectedTaskInfo?.descr || 'No description available'}</Text>
                     <View style={styles.container}>
-                        <TouchableOpacity style={styles.editButton} onPress={console.log('Edit Button')}>
+                        <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
                             <Text style={styles.editButtonText}>Edit</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={console.log('Delete Button')}>
+                        <TouchableOpacity onPress={handleDeletePress}>
                             <Ionicons name='trash' size={30} color='red'/>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
+            <EditTaskModal
+                isVisible={isEditModalVisible}
+                onClose={() => setIsEditModalVisible(false)}
+                selectedTaskInfo={selectedTaskInfo}
+                setTaskTitle={setTaskTitle}
+                setTaskDueDate={setTaskDueDate}
+                setTaskColor={setTaskColor}
+                setTaskDescr={setTaskDescr}
+                EditTask={EditTask}
+                setIsTaskInfoVisible={setIsTaskInfoVisible}
+                setIsVisible={setIsVisible}
+                setDueDateTimePicker={setDueDateTimePicker}
+                isDueDateTimePicker={isDueDateTimePicker}
+            />
+            <DeleteTaskModal
+                isVisible={isDeleteModalVisible}
+                onClose={() => setIsDeleteModalVisible(false)}
+                setIsTaskInfoVisible={setIsTaskInfoVisible}
+                DeleteTask={DeleteTask}
+                taskId={selectedTaskInfo?.id}
+            />
         </Modal>
     );
 };

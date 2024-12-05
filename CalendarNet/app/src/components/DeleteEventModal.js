@@ -14,7 +14,7 @@ const EventDeleteModal = ({
         onClose();
         setTimeout(() => {
             setIsEventInfoVisible(false); // Hide event info modal after a small delay
-        }, 0); // Using a delay to ensure state updates happen in sequence
+        }, 0);
     };
 
     return (

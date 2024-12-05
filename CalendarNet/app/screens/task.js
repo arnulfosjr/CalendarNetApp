@@ -35,40 +35,14 @@ const TaskUI = () => {
         };
         fetchTasks();
     }, []);
-
-    useEffect(() => {
-        if (editTaskID) {
-            const taskToEdit = tasks.find((task) => task.id === editTaskID);
-            if (taskToEdit) {
-                setTaskTitle(taskToEdit.title);
-                setTaskDueDate(taskToEdit.endDate);
-                setTaskColor(taskToEdit.color);
-                setTaskDescr(taskToEdit.descr);
-                setTaskIsCompleted(taskToEdit.isCompleted);
-            }
-        }
-    }, [editTaskID, tasks]);
-
-    useEffect(() => {
-        if (deleteTaskID) {
-            DeleteTask(deleteTaskID);
-            setDeleteTask(null); // reset
-            setIsTaskInfoVisible(false); // modal closes
-            setSelectedTaskInfo(null); // clear selected event
-        }
-    }, [deleteTaskID]);
-
-    const userOnePress = async (task) => {
-
-    };
-
+    
     const taskInfoPress = (task) => {
         setSelectedTaskInfo(task);
         setEditTaskID(task.id);
         setIsEditing(true);
         setIsTaskInfoVisible(true);
 
-        // Populate form with event data
+        // Populate form with task data
         setTaskTitle(task.title);  
         setTaskDueDate(new Date(task.endDate));  
         setTaskColor(task.color);  
@@ -96,12 +70,15 @@ const TaskUI = () => {
         
         try {
             const updatedTask = await editTask(editTaskID, taskData)
-            setEvent(tasks.map(task => task.id === editEventID ? { ...task, ...updatedTask } : task));
+            if(updatedTask){
+                setTasks(tasks.map(task => task.id === editTaskID ? { ...task, ...updatedTask } : task));
+            }
 
             setIsTaskInfoVisible(false);
             setIsEditing(false);
             setIsVisible(false);
             clearForm();
+            console.log("Task edited successfully:", updatedTask);
         } catch (error){
             console.log("Error editng task in EditTask.");
         }
@@ -117,7 +94,6 @@ const TaskUI = () => {
     }
 
     const clearForm = () => {
-        setIsVisible(false);
         setTaskTitle('');
         setTaskDueDate(new Date());
         setTaskColor('#6C757D');
@@ -126,9 +102,9 @@ const TaskUI = () => {
     };
 
     const handleAddPress = () => {
+        clearForm();
         setAddingTask(true);
         setIsVisible(true);
-        console.log('Add button pressed');
     };
 
     const renderTaskItem = ({ item }) => (

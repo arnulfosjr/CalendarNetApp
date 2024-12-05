@@ -64,30 +64,6 @@ const CalendarUI = () => {
         fetchEvents();
     }, []);
 
-    useEffect(() => {
-        if (editEventID) {
-            const eventToEdit = events.find((event) => event.id === editEventID);
-            if (eventToEdit) {
-                setEventTitle(eventToEdit.title);
-                setEventStartDate(eventToEdit.startDate);
-                setEventEndDate(eventToEdit.endDate);
-                setEventColor(eventToEdit.color);
-                setEventDescr(eventToEdit.descr);
-                setEventRepeat(eventToEdit.repeat);
-                setEventEndRepeat(eventToEdit.endOfRepeat);
-            }
-        }
-    }, [editEventID, events]);
-
-    useEffect(() => {
-        if (deleteEventID) {
-            DeleteEvent(deleteEventID);
-            setDeleteEvent(null); // reset
-            setIsEventInfoVisible(false); // modal closes
-            setSelectedEventInfo(null); // clear selected event
-        }
-    }, [deleteEventID]);
-
     const handleCalendarScroll = useCallback((event) => {
         const scroll = event.nativeEvent.contentOffset.y;
         if (scroll < 0) {
@@ -191,7 +167,6 @@ const CalendarUI = () => {
     }
 
     const clearForm = () => {
-        setIsVisible(false);
         setEventTitle('');
         setEventStartDate(new Date());
         setEventEndDate(new Date());
