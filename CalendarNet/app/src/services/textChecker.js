@@ -9,14 +9,33 @@ const TextChecker = (textInput) => {
     const deleteWords = ['Delete','Remove','Cancel','Dismiss','Discard','Erase']
 
     const eventTitle = ['Zoom meeting', 'Google Meet', 'Conference call', 'Webinar', 'Team meeting', 'Appointment', 
-        'Birthday', 'Doctor appointment', 'Lunch meeting','Workshop','Presentation','Event','Dinner','Call','Class','Party'];
+        'Birthday', 'Doctor appointment', 'Lunch meeting','Workshop','Presentation','Event','Dinner','Call','Class','Party','Dentist Appointment'];
 
     let doc = nlp(textInput);
-
+    
     let date = doc.match('#Date').out('array');
     let time = doc.match('#Time').out('array');
-    let verbs = doc.match('#Verb').out('array');
 
+    let detectedCreation = false;
+    createWords.forEach(event => {
+        if (doc.has(event)) {
+            detectedCreation = true;
+        }
+    });
+
+    let detectedEdit = false;
+    editWords.forEach(event => {
+        if (doc.has(event)) {
+            detectedEdit = true;
+        }
+    });
+
+    let detectedDeletion = false;
+    deleteWords.forEach(event => {
+        if (doc.has(event)) {
+            detectedDeletion = true;
+        }
+    });
 
     let detectedEventTitle = [];
     eventTitle.forEach(event => {
@@ -25,15 +44,20 @@ const TextChecker = (textInput) => {
         }
     });
 
+
     console.log('Dates' ,date);
     console.log('Times:', time);
-    console.log('Verbs:', verbs);
+    console.log('Dectected Creation:', detectedCreation);
+    console.log('Dectected Edit:', detectedEdit);
+    console.log('Dectected Deletion:', detectedDeletion);
     console.log('Detected Event Title:', detectedEventTitle);
     
     return {
         date,
         time,
-        verbs,
+        detectedCreation,
+        detectedEdit,
+        detectedDeletion,
         detectedEventTitle,
     };
 };

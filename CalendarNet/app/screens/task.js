@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, Modal, FlatList, ScrollView, SafeAreaView, TouchableOpacity} from 'react-native';
-import popUpStyle from '../src/styles/popUpStyle';
+import {View, Text, FlatList, SafeAreaView, TouchableOpacity, StyleSheet} from 'react-native';
 import { createTask, editTask, getTask, deleteTask } from '../src/services/api';
 import CalendarButton from '../src/components/CalendarButton';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +20,7 @@ const TaskUI = () => {
     const [taskColor, setTaskColor] = useState('#6C757D');
     const [taskDescr, setTaskDescr] = useState('');
     const [taskIsCompleted, setTaskIsCompleted] = useState(false);
+    const [taskUpdateTimeCreated, setTaskUpdateTimeCreated] = useState(new Date());
     const [isTaskEvent, setTaskEvent] = useState(false)
     const [isAddingTask, setAddingTask] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
@@ -107,14 +107,48 @@ const TaskUI = () => {
         setIsVisible(true);
     };
 
+    const taskCompletion = async (taskId) => {
+        const taskToUpdate = tasks.find((task) => task.id === taskId);
+        if(!taskToUpdate) return;
+
+        const isNowCompleted = !taskToUpdate.isCompleted;
+        const taskUpdate = {...taskToUpdate, isCompleted: !taskToUpdate.isCompleted, isCompleted: isNowCompleted,
+            ...(isNowCompleted && { taskUpdateTimeCreated: new Date() }), };
+        await editTask(taskId, taskUpdate);
+
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === taskId ? taskUpdate : task
+            )
+        );
+    }
+
     const renderTaskItem = ({ item }) => (
-        <TouchableOpacity style={[styles.taskItem,{width:'200',height:50}]} onPress={() => taskInfoPress(item)}>
-            <View style={[styles.container, { backgroundColor: item.color, }]}>
-                <Text style={styles.text}>C</Text>
-                <Text style={styles.taskTitle}>{item.title}</Text>
-                <Text style={styles.taskDueDate}>{new Date(item.dueDate).toLocaleDateString()}</Text>
-            </View>
-        </TouchableOpacity>
+        <View>
+            <Ionicons
+                name={item.isCompleted ? 'checkbox' : 'square-outline'}
+                size={30}
+                color={item.isCompleted ? '#28A745' : 'black'}
+                onPress={() => taskCompletion(item.id)}
+            />
+            <TouchableOpacity onPress={() => taskInfoPress(item)}>
+                <View style={[styles.taskItem,{width:260,height:60, marginHorizontal:50}]}>
+                    <View style={[styles.container, {flexDirection:'row',marginBottom:15,
+                        borderColor:'black',borderWidth:1, width:135, backgroundColor:item.color}]}>
+                        <Text style={[styles.taskTitle,{fontWeight:'bold'}]}> {item.title}</Text>
+                    </View>
+                    <View>
+                    {item.isCompleted && item.taskUpdateTimeCreated && (
+                        <View>
+                            <Text style={{ fontSize: 12, color: 'black', fontWeight:'bold', marginBottom:5}}>
+                                Completed: {new Date(item.taskUpdateTimeCreated).toLocaleString()}
+                            </Text>
+                        </View>
+                    )}
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </View>
     );
 
     return(
@@ -128,14 +162,16 @@ const TaskUI = () => {
                         <CalendarButton title='+' onPress={handleAddPress}/>
                     </TouchableOpacity>
                 </View> 
-                <View style={[styles.container]}>
-                    <Text style={styles.text}>Tasks List</Text>
+                <View style={[styles.container,{position:'relative',bottom:80}]}>
+                    <Text style={[styles.headerText,{fontWeight:'bold'}]}>Task List</Text>
                 </View>
-                <View style={styles.container}>
+                <View style={[styles.container,{position:'relative', bottom:230, flex:1,borderRadius:5, borderWidth:5}]}>
                     <FlatList
                         data={tasks}
                         renderItem={renderTaskItem}
                         keyExtractor={item => item.id.toString()}
+                        contentContainerStyle={{backgroundColor: 'white'}} 
+                        
                     />
                 </View>
                 <CreateTaskModal

@@ -1,13 +1,56 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput,TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView, ScrollView} from 'react-native';
+import {View, Text, TextInput,TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView, ScrollView, Alert} from 'react-native';
 import textPromptStyle from '../src/styles/textPromptStyle';
 import TextChecker from '../src/services/textChecker';
+import PromptConfirmation from '../src/components/PromptConfirmation';
 
 const TextPrompt = () => {
     const [textInput,setTextInput] = useState('');
 
-    const handleSubmit = () => {
-        TextChecker(textInput);
+    const handleSubmit = (input) => {
+        const analysis = TextChecker(input);
+
+        // if all empty input
+        if ( !analysis.detectedCreation && !analysis.detectedEdit && 
+            !analysis.detectedDeletion && analysis.date.length === 0 &&
+            analysis.time.length === 0 && analysis.detectedEventTitle.length === 0
+        ){
+            console.log('Is All False and Empty');
+            Alert.alert(
+                "Missing Info Needed",'Add action, name title, date, and time'
+            );
+
+        // if one action is true but no other info
+        } else if ((!analysis.detectedCreation || !analysis.detectedEdit || !analysis.detectedDeletion)
+            && analysis.date.length === 0 && analysis.time.length === 0 && analysis.detectedEventTitle.length === 0){
+                console.log('One action is true but no other info');
+                Alert.alert(
+                    "Missing Info Needed",'Add name title, date, time.'
+                ); 
+
+        // if one action is true and title exists but no date or time.
+        } else if ((!analysis.detectedCreation || !analysis.detectedEdit || !analysis.detectedDeletion)
+            && (analysis.detectedEventTitle.length > 0 && analysis.date.length === 0 && analysis.time.length === 0)){
+                console.log('One action is true and title exists but no date or time.');
+                Alert.alert(
+                    "Missing Info Needed",'Add date and time.'
+                ); 
+
+        // if one action is true, title exits, date exists but no time.
+        }  else if ((!analysis.detectedCreation || !analysis.detectedEdit || !analysis.detectedDeletion)
+            && (analysis.detectedEventTitle.length > 0 && analysis.date.length > 0 && analysis.time.length === 0)){
+                console.log('One action is true, title exits, date exists but no time.');
+                Alert.alert(
+                    "Missing Info Needed",'Add time.'
+                );  
+        } else {
+            console.log('Input Check passed');
+            Alert.alert(
+                "Result", 'Success!'
+            )
+
+        }
+        
     };
 
     return(
@@ -38,7 +81,7 @@ const TextPrompt = () => {
                                                 numberOfLines={5}
                                                 textAlignVertical='top'
                                             />
-                                            <TouchableOpacity style={[textPromptStyle.button]} onPress={handleSubmit}>
+                                            <TouchableOpacity style={[textPromptStyle.button]} onPress={() => handleSubmit(textInput)}>
                                                 <Text style={textPromptStyle.buttonText}>Submit</Text>
                                             </TouchableOpacity>
                                     </View>
