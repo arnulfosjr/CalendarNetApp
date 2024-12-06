@@ -8,12 +8,14 @@ const TextChecker = (textInput) => {
     const editWords = ['Edit','Adjust','Modify','Revise','Correct','Update','Alter','change']
     const deleteWords = ['Delete','Remove','Cancel','Dismiss','Discard','Erase']
 
-    const eventTitle = ['Zoom meeting', 'Google Meet', 'Conference call', 'Webinar', 'Team meeting', 'Appointment', 
-        'Birthday', 'Doctor appointment', 'Lunch meeting','Workshop','Presentation','Event','Dinner','Call','Class','Party','Dentist Appointment'];
+    const eventTitle = ['Zoom meeting', 'Zoom','Google Meet', 'Conference call', 'Webinar', 'Team meeting', 
+        'Birthday', 'Doctor appointment', 'Lunch meeting','Workshop','Presentation','Event','Dinner','Call','Class','Party','Dentist Appointment'
+        ,'Assignment','Homework','ASG','Hrmk'
+    ];
 
     let doc = nlp(textInput);
-    
-    let date = doc.match('#Date').out('array');
+
+    let date = doc.match('#Date').out('text');
     let time = doc.match('#Time').out('array');
 
     let detectedCreation = false;
@@ -45,7 +47,7 @@ const TextChecker = (textInput) => {
     });
 
 
-    console.log('Dates' ,date);
+    console.log('Dates:' ,date);
     console.log('Times:', time);
     console.log('Dectected Creation:', detectedCreation);
     console.log('Dectected Edit:', detectedEdit);

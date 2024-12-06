@@ -2,10 +2,19 @@ import React, {useState} from 'react';
 import {View, Text, TextInput,TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView, ScrollView, Alert} from 'react-native';
 import textPromptStyle from '../src/styles/textPromptStyle';
 import TextChecker from '../src/services/textChecker';
-import PromptConfirmation from '../src/components/PromptConfirmation';
+import PromptConfirmationModal from '../src/components/PromptConfirmationModal';
+import { format, parse } from 'date-fns';
 
 const TextPrompt = () => {
     const [textInput,setTextInput] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const [isCreate, setIsCreate] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
+    const [eventTitle,setEventTitle] = useState('');
+    const [eventDate, setEventDate] = useState('');
+    const [eventTime, setEventTime] = useState('');
+    const [isPromptConfirmationVisible, setIsPromptConfirmationVisible] = useState(false);
 
     const handleSubmit = (input) => {
         const analysis = TextChecker(input);
@@ -45,14 +54,34 @@ const TextPrompt = () => {
                 );  
         } else {
             console.log('Input Check passed');
-            Alert.alert(
-                "Result", 'Success!'
-            )
+            setIsCreate(analysis.detectedCreation);
+            setIsEdit(analysis.detectedEdit);
+            setIsDelete(analysis.detectedDeletion);
+            setEventTitle(analysis.detectedEventTitle.join(', '));
+            setEventDate(analysis.date);
+            setEventTime(analysis.time);
+            setIsPromptConfirmationVisible(true);
 
         }
         
     };
+    console.log('eventDate:', eventDate);
 
+        // Preprocess the eventDate to ensure proper format (add space before AM/PM if necessary)
+    const processedEventDate = eventDate.replace(/(\d{1,2})([APap][Mm])/, '$1 $2');
+
+    console.log('Processed Event Date:', processedEventDate);
+
+    // Parse the date with the updated format
+    const parsedDate = processedEventDate ? parse(processedEventDate, 'MM/dd/yy h:mm a', new Date()) : null;
+    console.log('parsedDate', parsedDate);
+
+    // Format the parsed date or display "Invalid date"
+    const formattedEventDate = parsedDate && !isNaN(parsedDate.getTime()) 
+    ? format(parsedDate, 'MMMM dd, yyyy h:mm a') 
+    : 'Invalid date or time';
+
+    console.log('Formatted Event Date:', formattedEventDate);
     return(
         <SafeAreaView style={{flex:1}}>
             <ScrollView style={{ flex: 1, backgroundColor:'#2960AC'}}>
@@ -66,25 +95,32 @@ const TextPrompt = () => {
                             <View style={[textPromptStyle.header, {top:130, zIndex:1}]}>
                                 <Text style={[textPromptStyle.headerText,{color:'white',fontWeight:'bold'}]}>Calendar Text Prompt</Text>
                             </View>
-                            <View style={[textPromptStyle.header,{top:110}]}>
-                                <Text style={[textPromptStyle.text,{fontWeight:'500'}]}>Create, Edit, Delete Events and Tasks.</Text>
-                            </View>
-                                    <View style={[textPromptStyle.header,{height:410}]}>
-                                        <Text style={[textPromptStyle.text,{fontWeight:'500'}]}>Enter Prompt:</Text>
-                                            <TextInput 
-                                                style={[textPromptStyle.textBox, {height:50, width:300, marginTop:10}]}
-                                                placeholder='Enter your prompt here'
-                                                value={textInput}
-                                                onChangeText={setTextInput}
-                                                autoCapitalize='none'
-                                                multiline={true}
-                                                numberOfLines={5}
-                                                textAlignVertical='top'
-                                            />
-                                            <TouchableOpacity style={[textPromptStyle.button]} onPress={() => handleSubmit(textInput)}>
-                                                <Text style={textPromptStyle.buttonText}>Submit</Text>
-                                            </TouchableOpacity>
-                                    </View>
+                                <View style={[textPromptStyle.header,{height:410}]}>
+                                    <Text style={[textPromptStyle.text,{fontWeight:'500'}]}>Enter Prompt:</Text>
+                                        <TextInput 
+                                            style={[textPromptStyle.textBox, {height:50, width:300, marginTop:10}]}
+                                            placeholder='Enter your prompt here'
+                                            value={textInput}
+                                            onChangeText={setTextInput}
+                                            autoCapitalize='none'
+                                            multiline={true}
+                                            numberOfLines={5}
+                                            textAlignVertical='top'
+                                        />
+                                        <TouchableOpacity style={[textPromptStyle.button]} onPress={() => handleSubmit(textInput)}>
+                                            <Text style={textPromptStyle.buttonText}>Submit</Text>
+                                        </TouchableOpacity>
+                                </View>
+                                <PromptConfirmationModal
+                                    isVisible={isPromptConfirmationVisible}
+                                    onClose={() => setIsPromptConfirmationVisible(false)}
+                                    title={eventTitle}
+                                    date={formattedEventDate}
+                                    time={eventTime}
+                                    isCreate = {isCreate}
+                                    isEdit = {isEdit}
+                                    isDelete = {isDelete}
+                                />
                         </View> 
                     </TouchableWithoutFeedback>
                 </KeyboardAvoidingView>

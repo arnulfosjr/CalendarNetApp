@@ -10,14 +10,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import Settings from './Settings';
 import Task from './Task';
 import TextPrompt from './TextPrompt';
 import CreateEventModal from '../src/components/CreateEventModal';
 import EventInfoModal from '../src/components/EventInfoModal';
 
-
-const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const CalendarUI = () => {
@@ -174,28 +171,6 @@ const CalendarUI = () => {
         setEventDescr('');
         setEventRepeat('Never');
         setEventEndDate(null);
-    };
-
-    const TabNavigator = () => {
-        return (
-            <Tab.Navigator
-                screenOptions={{
-                    animation: 'fade',
-                    headerShown: false,
-                }}
-            >
-                <Tab.Screen name="Tasks" component={Task} options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="calendar" size={size} color={color} />
-                    )
-                }} />
-                <Tab.Screen name="Text Prompt" component={Settings} options={{
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="settings" size={size} color={color} />
-                    )
-                }} />
-            </Tab.Navigator>
-        );
     };
 
     return (
@@ -384,15 +359,6 @@ const AppNavigator = () => {
                     options={{
                         drawerIcon: ({ color, size }) => (
                             <Ionicons name="create-outline" size={size} color={color} />
-                        )
-                    }}
-                />
-                <Drawer.Screen
-                    name="Settings"
-                    component={Settings}
-                    options={{
-                        drawerIcon: ({ color, size }) => (
-                            <Ionicons name="settings-sharp" size={size} color={color} />
                         )
                     }}
                 />
