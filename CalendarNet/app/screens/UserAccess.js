@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, Image, TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity,KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, SafeAreaView,Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import styles from '../src/styles/styles';
 import UserAccessButton from '../src/components/UserAccessButton';
@@ -23,26 +23,34 @@ const UserAccess = () => {
             if (isSignIn) {
                 const response = await createUsers(userData);
                 if (response) {
-                    console.log('new user is in');
                     if(response.token){
                         await AsyncStorage.setItem('authToken',response.token);
+                        Alert.alert(
+                            "New User Sign In ", "Successful."
+                        );
+                        router.push('/screens/Calendar');
                     } else {
                         console.log('No token received for a new user.')
                     }
-                    router.push('/screens/Calendar');
                 }
                 else {
-                    console.log('New user cannot get in');
+                    Alert.alert(
+                        "New User Sign In ", "Fail, Try Again."
+                    );
                 }
             } else {
                 const response = await logInUser(userData);
                 if (response && response.token) {
-                    console.log('Returning user is in', response.token);
                     await AsyncStorage.setItem('authToken', response.token);
+                    Alert.alert(
+                        "Log In ", "Successful."
+                    );
                     router.push('/screens/Calendar');
                 }
                 else {
-                    console.log('Returning user cannot get in: unathorized');
+                    Alert.alert(
+                        "Log In ", "Fail, Try Again."
+                    );
                 }
             }
         } catch (error) {
@@ -70,7 +78,7 @@ const UserAccess = () => {
                             </View>
                         </View>
                         <View>
-                            <Text style={[styles.text, { fontSize: 30, height: 60 }]}>{isSignIn ? "Sign In" : "Log In"}</Text>
+                            <Text style={[styles.text, { fontSize: 30, height: 60 }]}>{isSignIn ? "Sign Up" : "Log In"}</Text>
                         </View>
                         <Text style={styles.text}>Email:</Text>
                         <TextInput

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, SafeAreaView, Alert} from 'react-native';
 import calendarStyle from '../src/styles/calendarStyle';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, eachWeekOfInterval, endOfWeek, startOfWeek, subMonths, addMonths } from 'date-fns';
 import { logOutUser, createEvents, editEvents, getEvents, deleteEvents } from '../src/services/api';
@@ -308,8 +308,13 @@ const LogOutSideBar = (props) => {
             await logOutUser(); // Calls backend to log out.
             await AsyncStorage.removeItem('authToken');
             router.push('/screens/UserAccess');
+            Alert.alert(
+                "Log Out", "Successful."
+            );
         } catch (error) {
-            console.error('Error logging out:', error);
+            Alert.alert(
+                "Log out", "Fail."
+            );
         }
     };
     return (

@@ -13,13 +13,10 @@ logger = logging.getLogger(__name__)
 
 class UserCreate(APIView):
     def post(self,request, *args, **kwargs):
-        logger.debug("User creation attempted")
         serializers = UserSerializer(data=request.data)
         if serializers.is_valid():
             try:
                 user = serializers.save()
-                user.save()
-                logger.debug(f"User created views.py: {user}")
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({
                     'user': serializers.data,
@@ -40,12 +37,11 @@ class UserLogIn(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({'error':'Invalid email or password 1'},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error':'Invalid email or password'},status=status.HTTP_401_UNAUTHORIZED)
 
         if user.check_password(password): # authenticated using the retrieved user and password.
             token, created = Token.objects.get_or_create(user=user)
             logger.info(f"Generated token: {token.key}")
-            print(f"Generated token: {token.key}")
             return Response({'token': token.key},status=status.HTTP_200_OK)
         
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -57,10 +53,12 @@ class UserLogOut(APIView):
         user = request.user
         try:
             token = Token.objects.get(user=user)
+            logger.info(f"Logging out user {user.email}. Token: {token.key}")
             token.delete()
             return Response({'message': 'Successfully logged out'}, status=status.HTTP_200_OK)
-        except:
-            return Response({'error': 'Token not found'}, status=status.HTTP_400_BAD_REQUEST)
+        except Token.DoesNotExist:
+            logger.warning(f"Logout attempted for user {user.email}, but no token found.")
+            return Response({'message': 'No active session found to log out'}, status=status.HTTP_200_OK)
     
 class UserEdit(APIView):
     permission_classes = [IsAuthenticated]
@@ -121,8 +119,12 @@ class EventView(APIView):
         return Response(serializers.data)
     
 class EventList(generics.ListAPIView):
-    queryset = Event.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = EventSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Event.objects.filter(user=user)
 
 class TaskCreate(APIView):
      permission_classes = [IsAuthenticated]
@@ -161,8 +163,12 @@ class TaskView(APIView):
         return Response(serializers.data)
     
 class TaskList(generics.ListAPIView):
-    queryset = Task.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(user=user)
 
 class ReminderCreate(APIView):
     permission_classes = [IsAuthenticated]

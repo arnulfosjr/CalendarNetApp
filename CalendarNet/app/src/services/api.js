@@ -52,7 +52,9 @@ export const logInUser = async (userData) => {
             await AsyncStorage.setItem('authToken', token)
 
             // token saved in axios header for future authenticated requests.
+            console.log('Fetching user-specific data...');
             api.defaults.headers.common['Authorization'] = `Token ${token}`;
+            console.log('User events: ',userData)
             return response.data; // Returning the full response.
         } else {
             console.log('No token received, check response structured');
@@ -72,13 +74,21 @@ export const logInUser = async (userData) => {
 
 export const logOutUser = async () => {
     try {
-        // Make a request to the backend.
-        await api.post('/users/logout/');
-        // Remove token from localStorage.
-        await AsyncStorage.removeItem('authToken');
+        const token = await AsyncStorage.getItem('authToken');
+        if (!token) {
+            console.warn("No token found, user might already be logged out.");
+            return;
+        }
+
+        const headers = { Authorization: `Token ${token}` };
+        await api.post('/users/logout/', {}, { headers });
+
+        // Clear token after successful logout
+        await AsyncStorage.multiRemove(['authToken','userData','taskData'])
         delete api.defaults.headers.common['Authorization'];
+        console.log('User successfully logged out.');
     } catch (error) {
-        console.log("Error logging out:", error);
+        console.error("Error logging out:", error);
     }
     
 };

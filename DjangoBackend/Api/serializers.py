@@ -7,7 +7,7 @@ from datetime import datetime
 import pytz
 
 import logging
-logger = logging.getLogger('console')
+logger = logging.getLogger(__name__)
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data): # create user and to hash password.
         try:
+            logger.info("User Creation endpoint hit")
             with transaction.atomic():
                 # create user and save in database.
                 user = User.objects.create(
@@ -32,7 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
         
                 # token creation for user
                 token, created = Token.objects.get_or_create(user=user)
-                logger.debug("User ID: %d, Token Created: %s", user.id, token.key)
+                logger.info("User ID: %d, Token Created: %s", user.id, token.key)
+                logger.info('User Email: %s',user.email)
                 user.token = token.key
                 return user
         except Exception as e:
