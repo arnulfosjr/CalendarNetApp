@@ -51,14 +51,13 @@ export const logInUser = async (userData) => {
             //Store token in local storage.
             await AsyncStorage.setItem('authToken', token)
 
-            // token saved in axios header for future authenticated requests.
-            console.log('Fetching user-specific data...');
+            // token saved in axios header for authenticated requests.
             api.defaults.headers.common['Authorization'] = `Token ${token}`;
-            console.log('User events: ',userData)
+            console.log('User data: ',userData)
             return response.data; // Returning the full response.
         } else {
             console.log('No token received, check response structured');
-            return null; // Make sure to handle no token case.
+            return null; // handle no token case.
         }
     }
     catch(error) {

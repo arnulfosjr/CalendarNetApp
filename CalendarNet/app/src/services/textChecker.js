@@ -1,4 +1,3 @@
-import React, {useState}from 'react';
 import nlp from "compromise";
 
 const TextChecker = (textInput) => {
