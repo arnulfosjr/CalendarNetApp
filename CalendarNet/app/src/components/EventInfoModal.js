@@ -64,7 +64,7 @@ const EventInfoModal = ({
                     </View>
                     <Text style={popUpStyle.text}>{formatStartDate}</Text>
                     <Text style={popUpStyle.text}>{formatEndDate}</Text>
-                    <Text style={popUpStyle.text}>{selectedEventInfo?.descr || 'No description available'}</Text>
+                    <Text style={popUpStyle.text}>{selectedEventInfo?.descr || 'No description'}</Text>
                     <Text style={popUpStyle.text}>
                         <Ionicons name='repeat-outline' size={20} color='blue'/> Repeats: {selectedEventInfo?.repeat} {'\n'}Until: {formatEndRepeat}
                     </Text>

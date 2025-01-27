@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Modal, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Modal, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import CalendarButton from './CalendarButton';
 import popUpStyle from '../styles/popUpStyle';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,8 +19,13 @@ const PromptConfirmationModal = ({
     isEdit,
     isDelete,
 }) => {
+    const [timePickerVisible, setTimePickerVisible] = useState(false);
+    const selectedDay = date instanceof Date ? date : new Date(date);
     const [colorChoice, setColorChoice] = useState('#6C757D');
     const [repeatChoice, setRepeatChoice] = useState('Never');
+    const [endRepeat,setEndRepeat] = useState(new Date());
+    const [isEndRepeatTimePicker,setIsEndRepeatTimePicker] = useState(false);
+    console.log("selected day:",selectedDay)
 
     const handleAction = (isCreate,isEdit,isDelete) => {
         if(isCreate) {
@@ -32,8 +37,16 @@ const PromptConfirmationModal = ({
         }
     };
 
+    const handleEndRepeatDefaultDate = () => {
+        if(selectedDay){
+            const defaultEndDate = new Date(selectedDay);
+            defaultEndDate.setHours(0,0,0,0);
+            setEndRepeat(defaultEndDate);
+        }
+    }
+
     const handleCreate = () => {
-        
+        console.log("create:",title);
     }
 
     const handleEdit = () => {
@@ -73,6 +86,47 @@ const PromptConfirmationModal = ({
                                 />
                             ))}
                         </View>
+                        <Text style={popUpStyle.textTitle}>Choose Repeat Option:</Text>
+                            <View style={styles.container}>
+                                {repeatOptions.map((repeat) => (
+                                    <TouchableOpacity
+                                        key={repeat}
+                                        style={[
+                                            styles.repeatBox,
+                                            repeatChoice === repeat && styles.selectedBox,
+                                        ]}
+                                        onPress={() => setRepeatChoice(repeat)}
+                                    >
+                                        <Text style={{ textAlign: 'center', fontWeight:'bold'}}>{repeat}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            {repeatChoice !== 'Never' &&(
+                                <>
+                                    <Text style={popUpStyle.textTitle}>Choose Repeat End Date:</Text>
+                                    <TouchableOpacity onPress={() => setIsEndRepeatTimePicker(true)}>
+                                        <TextInput
+                                            placeholder='Repeat End Date'
+                                            value={endRepeat ? format(new Date(endRepeat), 'yyyy-MM-dd') : ''}
+                                            onChangeText={setEndRepeat}
+                                            editable={false}
+                                            style={popUpStyle.text}
+                                        />
+                                    </TouchableOpacity>
+                                    <DateTimePickerModal
+                                        isVisible={isEndRepeatTimePicker}
+                                        mode="date"
+                                        date={endRepeat instanceof Date ? endRepeat: new Date()}
+                                        onConfirm={(date) => {
+                                            console.log('Selected repeat end date:',date);
+                                            setEndRepeat(new Date(date));
+                                            handleEndRepeatDefaultDate();
+                                            setIsEndRepeatTimePicker(false);
+                                        }}
+                                        onCancel={() => setIsEndRepeatTimePicker(false)}
+                                    />
+                                </>
+                            )}
                         </View>
                     )}
 
@@ -161,13 +215,13 @@ const styles = StyleSheet.create({
         margin:1,
     },
     repeatBox: {
-        width: 60,
+        width: 57,
         height: 25,
         borderColor: '#000',
         backgroundColor:'white',
         borderRadius: 5,
         borderWidth: 1,
-        margin:1,
+        marginTop:5,
         marginBottom:5
     },
     selectedBox: {

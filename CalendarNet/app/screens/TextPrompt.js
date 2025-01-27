@@ -65,23 +65,17 @@ const TextPrompt = () => {
         }
         
     };
-    console.log('eventDate:', eventDate);
-
-        // Preprocess the eventDate to ensure proper format (add space before AM/PM if necessary)
+    // Preprocess the eventDate to ensure proper format (add space before AM/PM if necessary)
     const processedEventDate = eventDate.replace(/(\d{1,2})([APap][Mm])/, '$1 $2');
-
-    console.log('Processed Event Date:', processedEventDate);
 
     // Parse the date with the updated format
     const parsedDate = processedEventDate ? parse(processedEventDate, 'MM/dd/yy h:mm a', new Date()) : null;
-    console.log('parsedDate', parsedDate);
 
     // Format the parsed date or display "Invalid date"
     const formattedEventDate = parsedDate && !isNaN(parsedDate.getTime()) 
     ? format(parsedDate, 'MMMM dd, yyyy h:mm a') 
     : 'Invalid date or time';
 
-    console.log('Formatted Event Date:', formattedEventDate);
     return(
         <SafeAreaView style={{flex:1}}>
             <ScrollView style={{ flex: 1, backgroundColor:'#2960AC'}}>

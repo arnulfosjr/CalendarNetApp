@@ -66,7 +66,7 @@ class Event(models.Model):
     startDate = models.DateTimeField()
     endDate = models.DateTimeField()
     color = models.CharField(max_length=7,choices=COLOR_CHOICES,default='#6C757D')
-    descr = models.CharField(max_length=200)
+    descr = models.CharField(max_length=200,null=True,blank=True)
 
     repeat = models.CharField(max_length=10,choices=REPEAT_OPTIONS,default='Never')
     endOfRepeat = models.DateTimeField(null=True,blank=True)
